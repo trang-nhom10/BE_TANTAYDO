@@ -17,13 +17,4 @@ public class ResponseDTO<T> {
     private Long total;
     private String details;
 
-    public static ResponseDTO build(int code, String errors, Long total, Object data)
-    {
-        ResponseDTO apiResponse = new ResponseDTO();
-        apiResponse.setCode(code);
-        apiResponse.setData(data);
-        apiResponse.setMessage(errors);
-        apiResponse.setTotal(total);
-        return apiResponse;
-    }
 }
