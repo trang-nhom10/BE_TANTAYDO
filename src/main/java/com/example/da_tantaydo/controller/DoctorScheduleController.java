@@ -13,20 +13,20 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/schedules")
+@RequestMapping("/schedules")
 @RequiredArgsConstructor
 public class DoctorScheduleController {
 
     private final DoctorScheduleService scheduleService;
 
-    @PostMapping
+    @PostMapping("/create")
     @PreAuthorize("hasAuthority('ADMIN_MANAGE_SCHEDULE')")
     public ResponseEntity<DoctorScheduleResponseDTO> create(
             @RequestBody DoctorScheduleRequestDTO request) {
         return ResponseEntity.ok(scheduleService.create(request));
     }
 
-    @PutMapping("/{id}")
+    @PostMapping("update/{id}")
     @PreAuthorize("hasAuthority('ADMIN_MANAGE_SCHEDULE')")
     public ResponseEntity<DoctorScheduleResponseDTO> update(
             @PathVariable Long id,
@@ -34,7 +34,7 @@ public class DoctorScheduleController {
         return ResponseEntity.ok(scheduleService.update(id, request));
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("delete/{id}")
     @PreAuthorize("hasAuthority('ADMIN_MANAGE_SCHEDULE')")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         scheduleService.delete(id);
@@ -46,7 +46,7 @@ public class DoctorScheduleController {
         return ResponseEntity.ok(scheduleService.getById(id));
     }
 
-    @GetMapping
+    @GetMapping("/getall")
     public ResponseEntity<List<DoctorScheduleResponseDTO>> getAll() {
         return ResponseEntity.ok(scheduleService.getAll());
     }

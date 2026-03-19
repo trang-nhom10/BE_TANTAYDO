@@ -23,10 +23,10 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponseDTO create(OrderRequestDTO request) {
         Customer customer = customerRepository.findById(request.getCustomerId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy khách hàng"));
+                .orElseThrow(() -> new RuntimeException("Customer not found."));
 
         Doctor doctor = doctorRepository.findById(request.getDoctorId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy bác sĩ"));
+                .orElseThrow(() -> new RuntimeException("Doctor not found."));
 
         Order order = Order.builder()
                 .customer(customer)
@@ -39,15 +39,13 @@ public class OrderServiceImpl implements OrderService {
         return toDTO(orderRepository.save(order));
     }
 
-    // NHÂN VIÊN CẬP NHẬT TRẠNG THÁI + GIÁ TIỀN
     @Override
     public OrderResponseDTO updateStatus(Long id, OrderUpdateStatusDTO request) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
+                .orElseThrow(() -> new RuntimeException("Order not found."));
 
-        // KHÔNG CHO CẬP NHẬT ĐƠN ĐÃ HỦY
         if (order.getStatus() == OrderStatus.CANCELLED)
-            throw new RuntimeException("Đơn hàng đã bị hủy, không thể cập nhật");
+            throw new RuntimeException("This order has been cancelled and cannot be updated.");
 
         order.setStatus(request.getStatus());
         if (request.getTotalPrice() != null)
@@ -56,14 +54,13 @@ public class OrderServiceImpl implements OrderService {
         return toDTO(orderRepository.save(order));
     }
 
-    // KHÁCH HÀNG HỦY ĐƠN - CHỈ HỦY KHI CÒN PENDING
     @Override
     public void delete(Long id) {
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng"));
+                .orElseThrow(() -> new RuntimeException("Order not found."));
 
         if (order.getStatus() != OrderStatus.PENDING)
-            throw new RuntimeException("Chỉ có thể hủy đơn hàng đang chờ xử lý");
+            throw new RuntimeException("Only pending orders can be cancelled.");
 
         order.setStatus(OrderStatus.CANCELLED);
         orderRepository.save(order);
@@ -72,7 +69,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderResponseDTO getById(Long id) {
         return toDTO(orderRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy đơn hàng")));
+                .orElseThrow(() -> new RuntimeException("Order not found.")));
     }
 
     @Override
@@ -107,7 +104,7 @@ public class OrderServiceImpl implements OrderService {
                 .customerId(o.getCustomer().getId())
                 .customerName(o.getCustomer().getFullName())
                 .customerPhone(o.getCustomer().getPhone())
-                .doctorName(o.getDoctor() != null ? o.getDoctor().getName() : null)
+                .doctorName(o.getDoctor() != null ? o.getDoctor().getFullName() : null)
                 .service(o.getService())
                 .totalPrice(o.getTotalPrice())
                 .status(o.getStatus())

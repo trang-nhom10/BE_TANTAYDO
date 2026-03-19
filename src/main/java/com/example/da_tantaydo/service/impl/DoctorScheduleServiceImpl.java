@@ -25,18 +25,17 @@ public class DoctorScheduleServiceImpl implements DoctorScheduleService {
     @Override
     public DoctorScheduleResponseDTO create(DoctorScheduleRequestDTO request) {
         Doctor doctor = doctorRepository.findById(request.getDoctorId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy bác sĩ"));
+                .orElseThrow(() -> new RuntimeException("Doctor not found."));
 
-        // KIỂM TRA TRÙNG GIỜ
         boolean overlap = scheduleRepository.existsOverlap(
                 request.getDoctorId(),
                 request.getWorkDate(),
                 request.getStartTime(),
                 request.getEndTime(),
-                0L // 0L vì là tạo mới, không có id để loại trừ
+                0L
         );
         if (overlap) {
-            throw new RuntimeException("Bác sĩ đã có ca khám trong khung giờ này");
+            throw new RuntimeException("The doctor already has a schedule in this time slot.");
         }
 
         DoctorSchedule schedule = DoctorSchedule.builder()
@@ -54,22 +53,21 @@ public class DoctorScheduleServiceImpl implements DoctorScheduleService {
     @Override
     public DoctorScheduleResponseDTO update(Long id, DoctorScheduleRequestDTO request) {
         DoctorSchedule schedule = scheduleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy ca khám"));
+                .orElseThrow(() -> new RuntimeException("Schedule not found."));
 
-        // KIỂM TRA TRÙNG GIỜ (loại trừ chính nó)
         boolean overlap = scheduleRepository.existsOverlap(
                 request.getDoctorId(),
                 request.getWorkDate(),
                 request.getStartTime(),
                 request.getEndTime(),
-                id // loại trừ chính ca đang sửa
+                id
         );
         if (overlap) {
-            throw new RuntimeException("Bác sĩ đã có ca khám trong khung giờ này");
+            throw new RuntimeException("The doctor already has a schedule in this time slot.");
         }
 
         Doctor doctor = doctorRepository.findById(request.getDoctorId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy bác sĩ"));
+                .orElseThrow(() -> new RuntimeException("Doctor not found."));
 
         schedule.setDoctor(doctor);
         schedule.setWorkDate(request.getWorkDate());
@@ -85,14 +83,14 @@ public class DoctorScheduleServiceImpl implements DoctorScheduleService {
     @Override
     public void delete(Long id) {
         if (!scheduleRepository.existsById(id))
-            throw new RuntimeException("Không tìm thấy ca khám");
+            throw new RuntimeException("Schedule not found.");
         scheduleRepository.deleteById(id);
     }
 
     @Override
     public DoctorScheduleResponseDTO getById(Long id) {
         return toDTO(scheduleRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy ca khám")));
+                .orElseThrow(() -> new RuntimeException("Schedule not found.")));
     }
 
     @Override
@@ -113,11 +111,10 @@ public class DoctorScheduleServiceImpl implements DoctorScheduleService {
                 .stream().map(this::toDTO).collect(Collectors.toList());
     }
 
-    // ✅ GỌI HÀM NÀY SAU KHI KHÁCH ĐẶT LỊCH THÀNH CÔNG
     @Override
     public void checkAndUpdateStatus(Long scheduleId) {
         DoctorSchedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy ca khám"));
+                .orElseThrow(() -> new RuntimeException("Schedule not found."));
 
         int current = scheduleRepository.countCurrentPatient(scheduleId);
 

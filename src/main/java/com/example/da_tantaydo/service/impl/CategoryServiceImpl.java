@@ -18,9 +18,8 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public CategoryResponseDTO create(CategoryRequestDTO request) {
-        // KHÔNG CHO TẠO TRÙNG TÊN
         if (categoryRepository.existsByName(request.getName()))
-            throw new RuntimeException("Tên danh mục đã tồn tại");
+            throw new RuntimeException("Category name already exists.");
 
         Category category = Category.builder()
                 .name(request.getName())
@@ -33,7 +32,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryResponseDTO update(Long id, CategoryRequestDTO request) {
         Category category = categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy danh mục"));
+                .orElseThrow(() -> new RuntimeException("Category not found."));
 
         category.setName(request.getName());
         category.setDescription(request.getDescription());
@@ -44,14 +43,14 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void delete(Long id) {
         if (!categoryRepository.existsById(id))
-            throw new RuntimeException("Không tìm thấy danh mục");
+            throw new RuntimeException("Category not found.");
         categoryRepository.deleteById(id);
     }
 
     @Override
     public CategoryResponseDTO getById(Long id) {
         return toDTO(categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy danh mục")));
+                .orElseThrow(() -> new RuntimeException("Category not found.")));
     }
 
     @Override

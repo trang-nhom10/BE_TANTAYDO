@@ -10,20 +10,20 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping("/categories")
 @RequiredArgsConstructor
 public class CategoryController {
 
     private final CategoryService categoryService;
 
-    @PostMapping
+    @PostMapping("/create")
     @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
     public ResponseEntity<CategoryResponseDTO> create(
             @RequestBody CategoryRequestDTO request) {
         return ResponseEntity.ok(categoryService.create(request));
     }
 
-    @PutMapping("/{id}")
+    @PostMapping("/update/{id}")
     @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
     public ResponseEntity<CategoryResponseDTO> update(
             @PathVariable Long id,
@@ -31,19 +31,19 @@ public class CategoryController {
         return ResponseEntity.ok(categoryService.update(id, request));
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("delete/{id}")
     @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         categoryService.delete(id);
         return ResponseEntity.ok("Xóa danh mục thành công");
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("details/{id}")
     public ResponseEntity<CategoryResponseDTO> getById(@PathVariable Long id) {
         return ResponseEntity.ok(categoryService.getById(id));
     }
 
-    @GetMapping
+    @GetMapping("/getall")
     public ResponseEntity<List<CategoryResponseDTO>> getAll() {
         return ResponseEntity.ok(categoryService.getAll());
     }

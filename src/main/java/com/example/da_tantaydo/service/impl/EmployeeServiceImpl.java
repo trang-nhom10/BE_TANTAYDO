@@ -27,20 +27,17 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final PasswordEncoder passwordEncoder;
     private final MediaStorageService mediaStorageService;
 
-    // ============================================
-    // ADMIN TẠO NHÂN VIÊN
-    // ============================================
     @Override
     public EmployeeResponseDTO create(EmployeeCreateDTO request) {
         if (employeeRepository.existsByUserGmail(request.getEmail()))
-            throw new RuntimeException("Email đã tồn tại");
+            throw new RuntimeException("Email already exists.");
         if (employeeRepository.existsByCccd(request.getCccd()))
-            throw new RuntimeException("CCCD đã tồn tại");
+            throw new RuntimeException("CCCD already exists.");
         if (employeeRepository.existsByPhone(request.getPhone()))
-            throw new RuntimeException("Số điện thoại đã tồn tại");
+            throw new RuntimeException("Phone number already exists.");
 
         Role role = roleRepository.findById(request.getRoleId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy role"));
+                .orElseThrow(() -> new RuntimeException("Role not found."));
 
         User user = User.builder()
                 .gmail(request.getEmail())
@@ -50,7 +47,6 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .build();
         userRepository.save(user);
 
-        // TẠO EMPLOYEE
         Employee employee = Employee.builder()
                 .user(user)
                 .fullName(request.getFullName())
@@ -64,16 +60,13 @@ public class EmployeeServiceImpl implements EmployeeService {
         return toDTO(employeeRepository.save(employee));
     }
 
-    // ============================================
-    // ADMIN UPDATE QUYỀN NHÂN VIÊN
-    // ============================================
     @Override
     public EmployeeResponseDTO updateRole(Long id, EmployeeUpdateRoleDTO request) {
         Employee employee = employeeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên"));
+                .orElseThrow(() -> new RuntimeException("Employee not found."));
 
         Role role = roleRepository.findById(request.getRoleId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy role"));
+                .orElseThrow(() -> new RuntimeException("Role not found."));
 
         employee.getUser().setRole(role);
         userRepository.save(employee.getUser());
@@ -81,26 +74,20 @@ public class EmployeeServiceImpl implements EmployeeService {
         return toDTO(employeeRepository.save(employee));
     }
 
-    // ============================================
-    // ADMIN XÓA NHÂN VIÊN
-    // ============================================
     @Override
     public void delete(Long id) {
         Employee employee = employeeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên"));
+                .orElseThrow(() -> new RuntimeException("Employee not found."));
 
         employeeRepository.delete(employee);
         userRepository.delete(employee.getUser());
     }
 
-    // ============================================
-    // NHÂN VIÊN TỰ UPDATE THÔNG TIN + ẢNH
-    // ============================================
     @Override
     public EmployeeResponseDTO updateProfile(String gmail, EmployeeRequestDTO request,
                                              MultipartFile img) {
         Employee employee = employeeRepository.findByUserGmail(gmail)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên"));
+                .orElseThrow(() -> new RuntimeException("Employee not found."));
 
         employee.setFullName(request.getFullName());
         employee.setPhone(request.getPhone());
@@ -109,9 +96,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setAddress(request.getAddress());
         employee.setCccd(request.getCccd());
 
-        // ✅ DÙNG MediaStorageService
         if (img != null && !img.isEmpty()) {
-            // XÓA ẢNH CŨ NẾU CÓ
             if (employee.getImg() != null) {
                 mediaStorageService.deleteMedia(Long.parseLong(employee.getImg()));
             }
@@ -122,31 +107,22 @@ public class EmployeeServiceImpl implements EmployeeService {
         return toDTO(employeeRepository.save(employee));
     }
 
-    // ============================================
-    // LẤY TẤT CẢ - PHÂN TRANG
-    // ============================================
     @Override
     public Page<EmployeeResponseDTO> getAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return employeeRepository.findAll(pageable).map(this::toDTO);
     }
 
-    // ============================================
-    // TÌM KIẾM THEO TÊN / SỐ ĐIỆN THOẠI / CCCD
-    // ============================================
     @Override
     public Page<EmployeeResponseDTO> search(String keyword, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return employeeRepository.search(keyword, pageable).map(this::toDTO);
     }
 
-    // ============================================
-    // LẤY CHI TIẾT
-    // ============================================
     @Override
     public EmployeeResponseDTO getById(Long id) {
         return toDTO(employeeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên")));
+                .orElseThrow(() -> new RuntimeException("Employee not found.")));
     }
 
     private EmployeeResponseDTO toDTO(Employee e) {

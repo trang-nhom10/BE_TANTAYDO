@@ -15,30 +15,30 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/doctors")
+@RequestMapping("/doctors")
 @RequiredArgsConstructor
 public class DoctorController {
 
     private final DoctorService doctorService;
 
-    // ✅ ADMIN TẠO BÁC SĨ
-    @PostMapping
+    // ADMIN TẠO BÁC SĨ
+    @PostMapping("/create")
     @PreAuthorize("hasAuthority('ADMIN_MANAGE_DOCTOR')")
     public ResponseEntity<DoctorResponseDTO> create(
             @RequestBody DoctorCreateDTO request) {
         return ResponseEntity.ok(doctorService.create(request));
     }
 
-    // ✅ ADMIN XÓA BÁC SĨ
-    @DeleteMapping("/{id}")
+    //  ADMIN XÓA BÁC SĨ
+    @PostMapping("delete/{id}")
     @PreAuthorize("hasAuthority('ADMIN_MANAGE_DOCTOR')")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         doctorService.delete(id);
         return ResponseEntity.ok("Xóa bác sĩ thành công");
     }
 
-    // ✅ ADMIN LẤY TẤT CẢ
-    @GetMapping
+    // ADMIN LẤY TẤT CẢ
+    @GetMapping("/getall")
     @PreAuthorize("hasAuthority('ADMIN_MANAGE_DOCTOR')")
     public ResponseEntity<Page<DoctorResponseDTO>> getAll(
             @RequestParam(defaultValue = "0") int page,
@@ -46,7 +46,7 @@ public class DoctorController {
         return ResponseEntity.ok(doctorService.getAll(page, size));
     }
 
-    // ✅ ADMIN TÌM KIẾM
+    // ADMIN TÌM KIẾM
     @GetMapping("/search")
     @PreAuthorize("hasAuthority('ADMIN_MANAGE_DOCTOR')")
     public ResponseEntity<Page<DoctorResponseDTO>> search(
@@ -56,14 +56,14 @@ public class DoctorController {
         return ResponseEntity.ok(doctorService.search(keyword, page, size));
     }
 
-    // ✅ LẤY CHI TIẾT
-    @GetMapping("/{id}")
+    //  LẤY CHI TIẾT
+    @GetMapping("details/{id}")
     public ResponseEntity<DoctorResponseDTO> getById(@PathVariable Long id) {
         return ResponseEntity.ok(doctorService.getById(id));
     }
 
-    // ✅ BÁC SĨ TỰ UPDATE THÔNG TIN + ẢNH
-    @PutMapping("/profile")
+    // BÁC SĨ TỰ UPDATE THÔNG TIN + ẢNH
+    @PutMapping("/update/profile")
     @PreAuthorize("hasAuthority('DOCTOR_UPDATE_PROFILE')")
     public ResponseEntity<DoctorResponseDTO> updateProfile(
             @RequestPart("request") DoctorProfileRequestDTO request,
@@ -73,8 +73,7 @@ public class DoctorController {
                 doctorService.updateProfile(authentication.getName(), request, img));
     }
 
-    // ✅ BÁC SĨ XEM LỊCH KHÁCH ĐẶT CỦA MÌNH
-    // GET /api/doctors/my/appointments?page=0&size=10
+    // BÁC SĨ XEM LỊCH KHÁCH ĐẶT CỦA MÌNH
     @GetMapping("/my/appointments")
     @PreAuthorize("hasAuthority('DOCTOR_VIEW_APPOINTMENT')")
     public ResponseEntity<Page<AppointmentResponseDTO>> getMyAppointments(
@@ -85,8 +84,7 @@ public class DoctorController {
                 doctorService.getMyAppointments(authentication.getName(), page, size));
     }
 
-    // ✅ BÁC SĨ XEM ĐƠN HÀNG KHÁCH CỦA MÌNH
-    // GET /api/doctors/my/orders?page=0&size=10
+    //  BÁC SĨ XEM ĐƠN HÀNG KHÁCH CỦA MÌNH
     @GetMapping("/my/orders")
     @PreAuthorize("hasAuthority('DOCTOR_VIEW_ORDER')")
     public ResponseEntity<Page<OrderResponseDTO>> getMyOrders(

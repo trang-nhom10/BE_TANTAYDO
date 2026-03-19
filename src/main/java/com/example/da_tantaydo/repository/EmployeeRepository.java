@@ -11,10 +11,7 @@ import java.util.Optional;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
-    // TÌM THEO EMAIL (QUA USER)
     Optional<Employee> findByUserGmail(String gmail);
-
-    // TÌM KIẾM THEO TÊN HOẶC SỐ ĐIỆN THOẠI
     @Query("""
         SELECT e FROM Employee e
         WHERE LOWER(e.fullName) LIKE LOWER(CONCAT('%', :keyword, '%'))

@@ -30,18 +30,15 @@ public class DoctorServiceImpl implements DoctorService {
     private final PasswordEncoder passwordEncoder;
     private final MediaStorageService mediaStorageService;
 
-    // ============================================
-    // ADMIN TẠO BÁC SĨ
-    // ============================================
     @Override
     public DoctorResponseDTO create(DoctorCreateDTO request) {
         if (doctorRepository.existsByUserGmail(request.getEmail()))
-            throw new RuntimeException("Email đã tồn tại");
+            throw new RuntimeException("Email already exists.");
         if (doctorRepository.existsByPhone(request.getPhone()))
-            throw new RuntimeException("Số điện thoại đã tồn tại");
+            throw new RuntimeException("Phone number already exists.");
 
         Role role = roleRepository.findById(request.getRoleId())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy role"));
+                .orElseThrow(() -> new RuntimeException("Role not found."));
 
         User user = User.builder()
                 .gmail(request.getEmail())
@@ -64,13 +61,10 @@ public class DoctorServiceImpl implements DoctorService {
         return toDTO(doctorRepository.save(doctor));
     }
 
-    // ============================================
-    // ADMIN XÓA BÁC SĨ
-    // ============================================
     @Override
     public void delete(Long id) {
         Doctor doctor = doctorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy bác sĩ"));
+                .orElseThrow(() -> new RuntimeException("Doctor not found."));
         doctorRepository.delete(doctor);
         userRepository.delete(doctor.getUser());
     }
@@ -91,18 +85,15 @@ public class DoctorServiceImpl implements DoctorService {
     @Override
     public DoctorResponseDTO getById(Long id) {
         return toDTO(doctorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy bác sĩ")));
+                .orElseThrow(() -> new RuntimeException("Doctor not found.")));
     }
 
-    // ============================================
-    // BÁC SĨ TỰ UPDATE THÔNG TIN + ẢNH
-    // ============================================
     @Override
     public DoctorResponseDTO updateProfile(String gmail,
                                            DoctorProfileRequestDTO request,
                                            MultipartFile img) {
         Doctor doctor = doctorRepository.findByUserGmail(gmail)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy bác sĩ"));
+                .orElseThrow(() -> new RuntimeException("Doctor not found."));
 
         doctor.setFullName(request.getFullName());
         doctor.setPhone(request.getPhone());
@@ -111,7 +102,6 @@ public class DoctorServiceImpl implements DoctorService {
         doctor.setAddress(request.getAddress());
         doctor.setLever(request.getLever());
 
-        // ✅ DÙNG MediaStorageService
         if (img != null && !img.isEmpty()) {
             if (doctor.getImg() != null) {
                 mediaStorageService.deleteMedia(Long.parseLong(doctor.getImg()));
@@ -123,14 +113,11 @@ public class DoctorServiceImpl implements DoctorService {
         return toDTO(doctorRepository.save(doctor));
     }
 
-    // ============================================
-    // BÁC SĨ XEM LỊCH KHÁCH ĐẶT CỦA MÌNH
-    // ============================================
     @Override
     public Page<AppointmentResponseDTO> getMyAppointments(String gmail,
                                                           int page, int size) {
         Doctor doctor = doctorRepository.findByUserGmail(gmail)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy bác sĩ"));
+                .orElseThrow(() -> new RuntimeException("Doctor not found."));
 
         Pageable pageable = PageRequest.of(page, size);
         return appointmentRepository
@@ -152,13 +139,10 @@ public class DoctorServiceImpl implements DoctorService {
                         .build());
     }
 
-    // ============================================
-    // BÁC SĨ XEM ĐƠN HÀNG KHÁCH CỦA MÌNH
-    // ============================================
     @Override
     public Page<OrderResponseDTO> getMyOrders(String gmail, int page, int size) {
         Doctor doctor = doctorRepository.findByUserGmail(gmail)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy bác sĩ"));
+                .orElseThrow(() -> new RuntimeException("Doctor not found."));
 
         Pageable pageable = PageRequest.of(page, size);
         return orderRepository
@@ -175,7 +159,6 @@ public class DoctorServiceImpl implements DoctorService {
                         .createdAt(o.getCreatedAt())
                         .build());
     }
-
 
     private DoctorResponseDTO toDTO(Doctor d) {
         return DoctorResponseDTO.builder()

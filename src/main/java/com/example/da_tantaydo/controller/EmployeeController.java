@@ -12,22 +12,22 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/employees")
+@RequestMapping("/employees")
 @RequiredArgsConstructor
 public class EmployeeController {
 
     private final EmployeeService employeeService;
 
-    // ✅ ADMIN - TẠO NHÂN VIÊN
-    @PostMapping
+    //  ADMIN - TẠO NHÂN VIÊN
+    @PostMapping("/create")
     @PreAuthorize("hasAuthority('ADMIN_MANAGE_EMPLOYEE')")
     public ResponseEntity<EmployeeResponseDTO> create(
             @RequestBody EmployeeCreateDTO request) {
         return ResponseEntity.ok(employeeService.create(request));
     }
 
-    // ✅ ADMIN - CẬP NHẬT QUYỀN
-    @PutMapping("/{id}/role")
+    //  ADMIN - CẬP NHẬT QUYỀN
+    @PostMapping("role/{id}")
     @PreAuthorize("hasAuthority('ADMIN_MANAGE_EMPLOYEE')")
     public ResponseEntity<EmployeeResponseDTO> updateRole(
             @PathVariable Long id,
@@ -35,17 +35,16 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeService.updateRole(id, request));
     }
 
-    // ✅ ADMIN - XÓA NHÂN VIÊN
-    @DeleteMapping("/{id}")
+    // ADMIN - XÓA NHÂN VIÊN
+    @PostMapping("delete/{id}")
     @PreAuthorize("hasAuthority('ADMIN_MANAGE_EMPLOYEE')")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         employeeService.delete(id);
         return ResponseEntity.ok("Xóa nhân viên thành công");
     }
 
-    // ✅ ADMIN - LẤY TẤT CẢ NHÂN VIÊN
-    // GET /api/employees?page=0&size=10
-    @GetMapping
+    // ADMIN - LẤY TẤT CẢ NHÂN VIÊN
+    @GetMapping("/getall")
     @PreAuthorize("hasAuthority('ADMIN_MANAGE_EMPLOYEE')")
     public ResponseEntity<Page<EmployeeResponseDTO>> getAll(
             @RequestParam(defaultValue = "0") int page,
@@ -53,7 +52,7 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeService.getAll(page, size));
     }
 
-    // ✅ ADMIN - TÌM KIẾM
+    //  ADMIN - TÌM KIẾM
     // GET /api/employees/search?keyword=nguyen&page=0&size=10
     @GetMapping("/search")
     @PreAuthorize("hasAuthority('ADMIN_MANAGE_EMPLOYEE')")
@@ -64,15 +63,15 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeService.search(keyword, page, size));
     }
 
-    // ✅ ADMIN - LẤY CHI TIẾT
-    @GetMapping("/{id}")
+    //  ADMIN - LẤY CHI TIẾT
+    @GetMapping("details/{id}")
     @PreAuthorize("hasAuthority('ADMIN_MANAGE_EMPLOYEE')")
     public ResponseEntity<EmployeeResponseDTO> getById(@PathVariable Long id) {
         return ResponseEntity.ok(employeeService.getById(id));
     }
 
-    // ✅ NHÂN VIÊN - TỰ UPDATE THÔNG TIN CỦA MÌNH
-    @PutMapping("/profile")
+    //  NHÂN VIÊN - TỰ UPDATE THÔNG TIN CỦA MÌNH
+    @PostMapping("/Update/profile")
     @PreAuthorize("hasAnyAuthority('EMPLOYEE_UPDATE_PROFILE')")
     public ResponseEntity<EmployeeResponseDTO> updateProfile(
             @RequestPart("request") EmployeeRequestDTO request,
@@ -82,8 +81,8 @@ public class EmployeeController {
         return ResponseEntity.ok(employeeService.updateProfile(gmail, request, img));
     }
 
-    // ✅ NHÂN VIÊN - XEM THÔNG TIN CỦA MÌNH
-    @GetMapping("/profile")
+    //  NHÂN VIÊN - XEM THÔNG TIN CỦA MÌNH
+    @GetMapping("/view/profile")
     @PreAuthorize("hasAnyAuthority('EMPLOYEE_UPDATE_PROFILE')")
     public ResponseEntity<EmployeeResponseDTO> getProfile(Authentication authentication) {
         String gmail = authentication.getName();

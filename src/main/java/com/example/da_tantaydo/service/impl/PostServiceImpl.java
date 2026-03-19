@@ -24,7 +24,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostResponseDTO create(PostRequestDTO request) {
         Employee employee = employeeRepository.findById(request.getCreatedBy())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên"));
+                .orElseThrow(() -> new RuntimeException("Employee not found."));
 
         Post post = Post.builder()
                 .title(request.getTitle())
@@ -39,10 +39,10 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostResponseDTO update(Long id, PostRequestDTO request) {
         Post post = postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy bài viết"));
+                .orElseThrow(() -> new RuntimeException("Post not found."));
 
         Employee employee = employeeRepository.findById(request.getCreatedBy())
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy nhân viên"));
+                .orElseThrow(() -> new RuntimeException("Employee not found."));
 
         post.setTitle(request.getTitle());
         post.setContent(request.getContent());
@@ -55,14 +55,14 @@ public class PostServiceImpl implements PostService {
     @Override
     public void delete(Long id) {
         if (!postRepository.existsById(id))
-            throw new RuntimeException("Không tìm thấy bài viết");
+            throw new RuntimeException("Post not found.");
         postRepository.deleteById(id);
     }
 
     @Override
     public PostResponseDTO getById(Long id) {
         return toDTO(postRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy bài viết")));
+                .orElseThrow(() -> new RuntimeException("Post not found.")));
     }
 
     @Override

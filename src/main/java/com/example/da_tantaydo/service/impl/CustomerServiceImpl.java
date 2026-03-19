@@ -25,25 +25,19 @@ public class CustomerServiceImpl implements CustomerService {
     private final DataSourceRepository dataSourceRepository;
     private final MediaStorageService mediaStorageService;
 
-    // ============================================
-    // KHÁCH XEM THÔNG TIN CỦA MÌNH
-    // ============================================
     @Override
     public CustomerResponseDTO getProfile(String gmail) {
         Customer customer = customerRepository.findByUserGmail(gmail)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy khách hàng"));
+                .orElseThrow(() -> new RuntimeException("Customer not found."));
         return toDTO(customer);
     }
 
-    // ============================================
-    // KHÁCH TỰ UPDATE THÔNG TIN + ẢNH
-    // ============================================
     @Override
     public CustomerResponseDTO updateProfile(String gmail,
                                              CustomerProfileRequestDTO request,
                                              MultipartFile img) {
         Customer customer = customerRepository.findByUserGmail(gmail)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy khách hàng"));
+                .orElseThrow(() -> new RuntimeException("Customer not found."));
 
         customer.setFullName(request.getFullName());
         customer.setPhone(request.getPhone());
@@ -55,7 +49,6 @@ public class CustomerServiceImpl implements CustomerService {
                     DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
         }
 
-        // ✅ UPLOAD ẢNH LÊN CLOUDINARY
         if (img != null && !img.isEmpty()) {
             if (customer.getImg() != null) {
                 mediaStorageService.deleteMedia(Long.parseLong(customer.getImg()));
@@ -67,9 +60,6 @@ public class CustomerServiceImpl implements CustomerService {
         return toDTO(customerRepository.save(customer));
     }
 
-    // ============================================
-    // KHÁCH XEM LỊCH SỬ ĐẶT LỊCH
-    // ============================================
     @Override
     public Page<AppointmentResponseDTO> getMyAppointments(String gmail,
                                                           int page, int size) {
@@ -95,13 +85,10 @@ public class CustomerServiceImpl implements CustomerService {
                         .build());
     }
 
-    // ============================================
-    // KHÁCH XEM LỊCH SỬ ĐƠN HÀNG
-    // ============================================
     @Override
     public Page<OrderResponseDTO> getMyOrders(String gmail, int page, int size) {
         Customer customer = customerRepository.findByUserGmail(gmail)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy khách hàng"));
+                .orElseThrow(() -> new RuntimeException("Customer not found."));
 
         Pageable pageable = PageRequest.of(page, size);
         return orderRepository
@@ -121,9 +108,6 @@ public class CustomerServiceImpl implements CustomerService {
                         .build());
     }
 
-    // ============================================
-    // ADMIN QUẢN LÍ KHÁCH HÀNG
-    // ============================================
     @Override
     public Page<CustomerResponseDTO> getAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size,
@@ -140,19 +124,16 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerResponseDTO getById(Long id) {
         return toDTO(customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy khách hàng")));
+                .orElseThrow(() -> new RuntimeException("Customer not found.")));
     }
 
     @Override
     public void delete(Long id) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy khách hàng"));
+                .orElseThrow(() -> new RuntimeException("Customer not found."));
         customerRepository.delete(customer);
     }
 
-    // ============================================
-    // LẤY URL ẢNH TỪ DATASOURCE
-    // ============================================
     private String getImgUrl(String mediaId) {
         if (mediaId == null) return null;
         try {
@@ -173,7 +154,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .cccd(c.getCccd())
                 .date(c.getDate())
                 .address(c.getAddress())
-                .img(getImgUrl(c.getImg())) // ✅ TRẢ VỀ URL
+                .img(getImgUrl(c.getImg()))
                 .build();
     }
 }

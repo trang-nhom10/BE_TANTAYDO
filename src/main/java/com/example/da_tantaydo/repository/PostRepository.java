@@ -10,12 +10,7 @@ import java.util.List;
 
 public interface PostRepository extends JpaRepository<Post, Long> {
 
-    // LẤY BÀI VIẾT MỚI NHẤT (DÙNG PAGEABLE ĐỂ PHÂN TRANG)
     Page<Post> findAllByOrderByCreatedAtDesc(Pageable pageable);
-
-    // LẤY BÀI VIẾT THEO TRẠNG THÁI, MỚI NHẤT TRƯỚC
     Page<Post> findByTypeOrderByCreatedAtDesc(PostType type, Pageable pageable);
-
-    // LẤY BÀI VIẾT THEO NHÂN VIÊN TẠO
     List<Post> findByCreatedByIdOrderByCreatedAtDesc(Long employeeId);
 }

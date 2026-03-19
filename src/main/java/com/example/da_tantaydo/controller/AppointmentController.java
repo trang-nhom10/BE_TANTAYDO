@@ -14,22 +14,22 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/appointments")
+@RequestMapping("/appointments")
 @RequiredArgsConstructor
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
 
-    // ✅ KHÁCH HÀNG ĐẶT LỊCH
-    @PostMapping
+    //  KHÁCH HÀNG ĐẶT LỊCH
+    @PostMapping("/create")
     @PreAuthorize("hasAuthority('CUSTOMER_BOOK_APPOINTMENT')")
     public ResponseEntity<AppointmentResponseDTO> create(
             @RequestBody AppointmentRequestDTO request) {
         return ResponseEntity.ok(appointmentService.create(request));
     }
 
-    // ✅ ADMIN/NHÂN VIÊN CẬP NHẬT TRẠNG THÁI
-    @PutMapping("/{id}/status")
+    //  ADMIN/NHÂN VIÊN CẬP NHẬT TRẠNG THÁI
+    @PutMapping("/update/status/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_APPOINTMENT','EMPLOYEE_MANAGE_APPOINTMENT')")
     public ResponseEntity<AppointmentResponseDTO> updateStatus(
             @PathVariable Long id,
@@ -37,8 +37,8 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.updateStatus(id, request));
     }
 
-    // ✅ CUSTOMER HỦY LỊCH CỦA MÌNH
-    @DeleteMapping("/{id}/cancel")
+    //  CUSTOMER HỦY LỊCH CỦA MÌNH
+    @DeleteMapping("cancel/{id}")
     @PreAuthorize("hasAuthority('CUSTOMER_BOOK_APPOINTMENT')")
     public ResponseEntity<String> cancel(
             @PathVariable Long id,
@@ -47,15 +47,14 @@ public class AppointmentController {
         return ResponseEntity.ok("Hủy lịch hẹn thành công");
     }
 
-    // ✅ LẤY CHI TIẾT
-    @GetMapping("/{id}")
+    //  LẤY CHI TIẾT
+    @GetMapping("details/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_APPOINTMENT','EMPLOYEE_MANAGE_APPOINTMENT')")
     public ResponseEntity<AppointmentResponseDTO> getById(@PathVariable Long id) {
         return ResponseEntity.ok(appointmentService.getById(id));
     }
 
-    // ✅ ADMIN/NHÂN VIÊN - LẤY TẤT CẢ PHÂN TRANG
-    // GET /api/appointments?page=0&size=10
+    //  ADMIN/NHÂN VIÊN - LẤY TẤT CẢ PHÂN TRANG
     @GetMapping
     @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_APPOINTMENT','EMPLOYEE_MANAGE_APPOINTMENT')")
     public ResponseEntity<Page<AppointmentResponseDTO>> getAll(
@@ -64,7 +63,7 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.getAll(page, size));
     }
 
-    // ✅ LỌC THEO TRẠNG THÁI
+    //  LỌC THEO TRẠNG THÁI
     // GET /api/appointments/status?status=PENDING&page=0&size=10
     @GetMapping("/status")
     @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_APPOINTMENT','EMPLOYEE_MANAGE_APPOINTMENT')")
@@ -75,8 +74,7 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.getByStatus(status, page, size));
     }
 
-    // ✅ LẤY LỊCH THEO BÁC SĨ
-    // GET /api/appointments/doctor/1?page=0&size=10
+    //  LẤY LỊCH THEO BÁC SĨ
     @GetMapping("/doctor/{doctorId}")
     @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_APPOINTMENT','EMPLOYEE_MANAGE_APPOINTMENT')")
     public ResponseEntity<Page<AppointmentResponseDTO>> getByDoctor(
@@ -86,8 +84,7 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentService.getByDoctor(doctorId, page, size));
     }
 
-    // ✅ CUSTOMER XEM LỊCH CỦA MÌNH
-    // GET /api/appointments/my?page=0&size=10
+    // CUSTOMER XEM LỊCH CỦA MÌNH
     @GetMapping("/my")
     @PreAuthorize("hasAuthority('CUSTOMER_BOOK_APPOINTMENT')")
     public ResponseEntity<Page<AppointmentResponseDTO>> getMyAppointments(
@@ -98,7 +95,7 @@ public class AppointmentController {
                 appointmentService.getByGmail(authentication.getName(), page, size));
     }
 
-    // ✅ TÌM KIẾM THEO TÊN/SĐT/DỊCH VỤ/BÁC SĨ
+    // TÌM KIẾM THEO TÊN/SĐT/DỊCH VỤ/BÁC SĨ
     // GET /api/appointments/search?keyword=nguyen&page=0&size=10
     @GetMapping("/search")
     @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_APPOINTMENT','EMPLOYEE_MANAGE_APPOINTMENT')")

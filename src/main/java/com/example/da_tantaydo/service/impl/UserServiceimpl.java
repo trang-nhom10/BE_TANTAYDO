@@ -54,8 +54,8 @@ public class UserServiceimpl implements UserService {
         }
 
         Long roleId = request.getRole();
-        if (roleId == null || (!roleId.equals(3L) && !roleId.equals(4L))) {
-            throw new IllegalArgumentException("Chỉ cho phép đăng ký CUSTOMER(4) hoặc MERCHANT(4)");
+        if (roleId == null || (!roleId.equals(3L))) {
+            throw new IllegalArgumentException("Registration is only permitted as a customer.");
         }
 
         Role role = roleRepository.findById(roleId).orElseThrow(() -> new RuntimeException("Role not found"));

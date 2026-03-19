@@ -14,13 +14,13 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/customers")
+@RequestMapping("/customers")
 @RequiredArgsConstructor
 public class CustomerController {
 
     private final CustomerService customerService;
 
-    // ✅ KHÁCH XEM THÔNG TIN CỦA MÌNH
+    //  KHÁCH XEM THÔNG TIN CỦA MÌNH
     @GetMapping("/profile")
     @PreAuthorize("hasAuthority('CUSTOMER_UPDATE_PROFILE')")
     public ResponseEntity<CustomerResponseDTO> getProfile(
@@ -29,8 +29,8 @@ public class CustomerController {
                 customerService.getProfile(authentication.getName()));
     }
 
-    // ✅ KHÁCH TỰ UPDATE THÔNG TIN + ẢNH
-    @PostMapping("/profile")
+    //  KHÁCH TỰ UPDATE THÔNG TIN + ẢNH
+    @PostMapping("update/profile")
     @PreAuthorize("hasAuthority('CUSTOMER_UPDATE_PROFILE')")
     public ResponseEntity<CustomerResponseDTO> updateProfile(
             @RequestPart("request") CustomerProfileRequestDTO request,
@@ -40,7 +40,7 @@ public class CustomerController {
                 customerService.updateProfile(authentication.getName(), request, img));
     }
 
-    // ✅ KHÁCH XEM LỊCH SỬ ĐẶT LỊCH CỦA MÌNH
+    //  KHÁCH XEM LỊCH SỬ ĐẶT LỊCH CỦA MÌNH
     // GET /api/customers/my/appointments?page=0&size=10
     @GetMapping("/my/appointments")
     @PreAuthorize("hasAuthority('CUSTOMER_BOOK_APPOINTMENT')")
@@ -53,7 +53,7 @@ public class CustomerController {
                         authentication.getName(), page, size));
     }
 
-    // ✅ KHÁCH XEM LỊCH SỬ ĐƠN HÀNG CỦA MÌNH
+    //  KHÁCH XEM LỊCH SỬ ĐƠN HÀNG CỦA MÌNH
     // GET /api/customers/my/orders?page=0&size=10
     @GetMapping("/my/orders")
     @PreAuthorize("hasAuthority('CUSTOMER_MANAGE_ORDER')")
@@ -66,7 +66,7 @@ public class CustomerController {
                         authentication.getName(), page, size));
     }
 
-    // ✅ ADMIN - LẤY TẤT CẢ KHÁCH HÀNG
+    //  ADMIN - LẤY TẤT CẢ KHÁCH HÀNG
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN_MANAGE_CUSTOMER')")
     public ResponseEntity<Page<CustomerResponseDTO>> getAll(
@@ -75,7 +75,7 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.getAll(page, size));
     }
 
-    // ✅ ADMIN - TÌM KIẾM
+    //  ADMIN - TÌM KIẾM
     @GetMapping("/search")
     @PreAuthorize("hasAuthority('ADMIN_MANAGE_CUSTOMER')")
     public ResponseEntity<Page<CustomerResponseDTO>> search(
@@ -85,15 +85,15 @@ public class CustomerController {
         return ResponseEntity.ok(customerService.search(keyword, page, size));
     }
 
-    // ✅ ADMIN - LẤY CHI TIẾT
-    @GetMapping("/{id}")
+    //  ADMIN - LẤY CHI TIẾT
+    @GetMapping("details/{id}")
     @PreAuthorize("hasAuthority('ADMIN_MANAGE_CUSTOMER')")
     public ResponseEntity<CustomerResponseDTO> getById(@PathVariable Long id) {
         return ResponseEntity.ok(customerService.getById(id));
     }
 
-    // ✅ ADMIN - XÓA KHÁCH HÀNG
-    @PostMapping("/{id}")
+    //  ADMIN - XÓA KHÁCH HÀNG
+    @PostMapping("delete/{id}")
     @PreAuthorize("hasAuthority('ADMIN_MANAGE_CUSTOMER')")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         customerService.delete(id);

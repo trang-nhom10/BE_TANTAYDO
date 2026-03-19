@@ -14,8 +14,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     boolean existsByPhone(String phone);
     boolean existsByCccd(String cccd);
     boolean existsByUserGmail(String gmail);
-
-    // TÌM KIẾM THEO TÊN / SĐT / CCCD
     @Query("""
         SELECT c FROM Customer c
         WHERE LOWER(c.fullName) LIKE LOWER(CONCAT('%', :keyword, '%'))

@@ -12,11 +12,8 @@ import java.util.Optional;
 public interface DoctorRepository extends JpaRepository<Doctor, Long> {
 
     Optional<Doctor> findByUserGmail(String gmail);
-
     boolean existsByUserGmail(String gmail);
     boolean existsByPhone(String phone);
-
-    // TÌM KIẾM THEO TÊN / CHUYÊN KHOA
     @Query("""
         SELECT d FROM Doctor d
         WHERE LOWER(d.fullName) LIKE LOWER(CONCAT('%', :keyword, '%'))

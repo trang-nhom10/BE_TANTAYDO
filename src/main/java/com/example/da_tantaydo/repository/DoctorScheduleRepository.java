@@ -12,16 +12,9 @@ import java.util.List;
 
 public interface DoctorScheduleRepository extends JpaRepository<DoctorSchedule, Long> {
 
-    // LẤY CA KHÁM THEO BÁC SĨ
     List<DoctorSchedule> findByDoctorId(Long doctorId);
-
-    // LẤY CA KHÁM THEO NGÀY
     List<DoctorSchedule> findByWorkDate(LocalDate workDate);
-
-    // LẤY CA KHÁM THEO BÁC SĨ VÀ NGÀY
     List<DoctorSchedule> findByDoctorIdAndWorkDate(Long doctorId, LocalDate workDate);
-
-    // LẤY CA KHÁM CÒN TRỐNG
     List<DoctorSchedule> findByStatus(ScheduleStatus status);
     @Query("""
         SELECT COUNT(s) > 0 FROM DoctorSchedule s
@@ -39,8 +32,6 @@ public interface DoctorScheduleRepository extends JpaRepository<DoctorSchedule, 
             @Param("endTime")   LocalTime endTime,
             @Param("excludeId") Long excludeId
     );
-
-    // ĐẾM SỐ BỆNH NHÂN HIỆN TẠI TRONG CA
     @Query("""
         SELECT COUNT(a) FROM Appointment a
         WHERE a.schedule.id = :scheduleId
