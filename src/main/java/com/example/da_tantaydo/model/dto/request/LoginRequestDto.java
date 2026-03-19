@@ -1,17 +1,14 @@
-package com.example.da_tantaydo.model.request;
-
+package com.example.da_tantaydo.model.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
+
 @Setter
-@NoArgsConstructor
+@Getter
 @AllArgsConstructor
-public class RegisterRequestDTO {
+public class LoginRequestDto {
     private String gmail;
     private String password;
-    private Long Role;
 }

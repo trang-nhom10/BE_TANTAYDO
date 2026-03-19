@@ -2,6 +2,7 @@ package com.example.da_tantaydo.model.entity;
 
 import com.example.da_tantaydo.model.enums.Status;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,6 +10,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Table(name = "USERS")
+@Builder
 public class User {
 
     @Id

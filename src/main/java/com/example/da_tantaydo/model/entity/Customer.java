@@ -1,14 +1,15 @@
 package com.example.da_tantaydo.model.entity;
-
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "CUSTOMERS")
 @Getter
 @Setter
-@Table(name = "CUSTOMERS")
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Customer {
 
     @Id
@@ -17,25 +18,24 @@ public class Customer {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "USER_ID", unique = true)
+    @JoinColumn(name = "USER_ID")
     private User user;
-
-    @Column(name ="CCCD")
-    private String cccd;
 
     @Column(name = "FULL_NAME")
     private String fullName;
 
-    @Column(name ="DATE")
-    private LocalDateTime dateTime;
-
     @Column(name = "PHONE")
     private String phone;
 
-    @Column (name ="ADDRESS")
+    @Column(name = "CCCD")
+    private String cccd;
+
+    @Column(name = "DATE")
+    private LocalDateTime date;
+
+    @Column(name = "ADDRESS")
     private String address;
 
-    @Column(name ="IMG")
+    @Column(name = "IMG")
     private String img;
-
 }

@@ -1,4 +1,4 @@
-package com.example.da_tantaydo.model.reponse;
+package com.example.da_tantaydo.model.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
