@@ -1,5 +1,6 @@
 package com.example.da_tantaydo.service.impl;
 
+import com.example.da_tantaydo.model.dto.response.ProfileResponseDTO;
 import com.example.da_tantaydo.model.entity.Customer;
 import com.example.da_tantaydo.model.entity.Doctor;
 import com.example.da_tantaydo.model.entity.Role;
@@ -12,6 +13,7 @@ import com.example.da_tantaydo.repository.CustomerRepository;
 import com.example.da_tantaydo.repository.DoctorRepository;
 import com.example.da_tantaydo.repository.RoleRepository;
 import com.example.da_tantaydo.repository.UserRepository;
+import com.example.da_tantaydo.repository.customer.UserCustomRepository;
 import com.example.da_tantaydo.security.JwtUtil;
 import com.example.da_tantaydo.service.UserService;
 import jakarta.transaction.Transactional;
@@ -30,6 +32,7 @@ public class UserServiceimpl implements UserService {
     private final RoleRepository roleRepository;
     private final CustomerRepository customerRepository;
     private final DoctorRepository doctorRepository;
+    private final UserCustomRepository userCustomRepository;
 
 
 
@@ -77,5 +80,10 @@ public class UserServiceimpl implements UserService {
         }
 
         return savedUser;
+    }
+
+    @Override
+    public ProfileResponseDTO getProfile(String email) {
+        return userCustomRepository.getProfileByEmail(email);
     }
 }

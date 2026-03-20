@@ -9,6 +9,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -51,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
                 String gmail = jwtUtil.getGmailFromToken(token);
                 User user = userRepository.findByGmail(gmail)
-                        .orElseThrow(() -> new RuntimeException("User not found"));
+                        .orElseThrow(() -> new ChangeSetPersister.NotFoundException("User not found"));
 
                 List<GrantedAuthority> authorities = user.getRole().getRolePermissions()
                         .stream()

@@ -27,8 +27,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerResponseDTO getProfile(String gmail) {
-        Customer customer = customerRepository.findByUserGmail(gmail)
-                .orElseThrow(() -> new RuntimeException("Customer not found."));
+        Customer customer = customerRepository.findByUserGmail(gmail).orElseThrow(() -> new RuntimeException("Customer not found."));
         return toDTO(customer);
     }
 
