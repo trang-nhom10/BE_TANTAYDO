@@ -29,7 +29,6 @@ public class DoctorServiceImpl implements DoctorService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final AppointmentRepository appointmentRepository;
-    private final OrderRepository orderRepository;
     private final PasswordEncoder passwordEncoder;
     private final MediaStorageService mediaStorageService;
 
@@ -56,11 +55,9 @@ public class DoctorServiceImpl implements DoctorService {
     @Override
     public void delete(Long id) {
         Doctor doctor = doctorRepository.findById(id).orElseThrow(() -> new RuntimeException("Doctor not found."));
-
-        Long userId = doctor.getUser().getId(); // lấy userId từ doctor
-
-        doctorRepository.delete(doctor); // xóa doctor trước
-        userRepository.deleteById(userId); // xóa user sau
+        Long userId = doctor.getUser().getId();
+        doctorRepository.delete(doctor);
+        userRepository.deleteById(userId);
     }
 
     @Override
@@ -97,7 +94,6 @@ public class DoctorServiceImpl implements DoctorService {
             String mediaId = mediaStorageService.uploadMedia(img);
             doctor.setImg(mediaId);
         }
-
       doctorRepository.save(doctor);
     }
 

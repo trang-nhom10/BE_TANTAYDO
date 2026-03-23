@@ -48,5 +48,5 @@ public class Employee {
     private String img;
 
     @Column(name = "CREATED_AT")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDate createdAt ;
 }

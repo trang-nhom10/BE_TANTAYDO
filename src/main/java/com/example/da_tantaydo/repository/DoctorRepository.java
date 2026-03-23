@@ -12,6 +12,8 @@ import java.util.Optional;
 public interface DoctorRepository extends JpaRepository<Doctor, Long> {
 
     Optional<Doctor> findByUserGmail(String gmail);
+    Optional<Doctor> findByUserId(Long userId);
+
     @Query("""
     SELECT d FROM Doctor d
     WHERE (:name IS NULL OR LOWER(d.name) LIKE LOWER(CONCAT('%', :name, '%')))
@@ -24,4 +26,5 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
             @Param("specialized") String specialized,
             @Param("lever") String lever
     );
+
 }

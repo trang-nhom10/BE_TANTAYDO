@@ -2,6 +2,8 @@ package com.example.da_tantaydo.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -44,5 +46,5 @@ public class Doctor {
     private String lever; // CẤP ĐỘ / HỌC HÀM
 
     @Column(name = "CREATED_AT")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDate createdAt ;
 }

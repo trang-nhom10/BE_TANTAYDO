@@ -8,9 +8,12 @@ import com.example.da_tantaydo.model.enums.AppointmentStatus;
 import com.example.da_tantaydo.service.AppointmentService;
 import com.example.da_tantaydo.service.CustomerService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @RestController
@@ -22,11 +25,15 @@ public class AppointmentController {
     private final CustomerService customerService;
 //KHÁCH HÀNG ĐẶT
     @PostMapping("/create")
-    public ResponseEntity<?> create(
-            @RequestBody AppointmentRequestDTO request,
-            Authentication authentication) {
-        appointmentService.create(request, authentication);
-        return ResponseEntity.ok("Create success");
+    public ResponseEntity<?> create(@RequestBody AppointmentRequestDTO request, Authentication authentication) {
+        try {
+            appointmentService.create(request, authentication);
+            return ResponseEntity.ok("Appointment created successfully.");
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("An error occurred. Please try again.");
+        }
     }
 //DÀNH CHO BÁC SĨ
     @PostMapping("/update/status/{id}")
@@ -77,9 +84,16 @@ public class AppointmentController {
         return ResponseEntity.ok(customerService.getMyAppointments(authentication));
     }
 
+    //nhân viên tìm kiếm
     @GetMapping("/search")
-    public ResponseEntity<List<AppointmentResponseDTO>> search(
-            @RequestParam String keyword) {
-        return ResponseEntity.ok(appointmentService.search(keyword));
+    public ResponseEntity<?> search(
+            @RequestParam(required = false) String nameCustomer,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createAt,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.TIME) LocalTime timeopen) {
+        try {
+            return ResponseEntity.ok(appointmentService.search(nameCustomer, createAt, timeopen));
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body("An error occurred. Please try again.");
+        }
     }
 }

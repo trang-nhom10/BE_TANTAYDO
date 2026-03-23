@@ -3,7 +3,8 @@ package com.example.da_tantaydo.model.entity;
 import com.example.da_tantaydo.model.enums.AppointmentStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "APPOINTMENTS")
@@ -31,7 +32,7 @@ public class Appointment {
     private String nameCustomer;
 
     @Column(name = "YEAR")
-    private LocalDateTime year;
+    private LocalDate year;
 
     @Column(name ="PHONE")
     private String phone;
@@ -43,10 +44,10 @@ public class Appointment {
     private  String  address;
 
     @Column(name ="CEATED_AT")
-    private LocalDateTime createAt;
+    private LocalDate createAt;
 
     @Column(name ="TIMEOPEN")
-    private LocalDateTime timeopen;
+    private LocalTime timeopen;
 
     @Column(name ="NOTE")
     private  String note;

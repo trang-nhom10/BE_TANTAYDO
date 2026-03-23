@@ -22,5 +22,5 @@ public class EmployeeResponseDTO {
     private String cccd;
     private String img;
     private String roleName;
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 }
