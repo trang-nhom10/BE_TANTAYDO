@@ -104,7 +104,7 @@ public class OrderServiceImpl implements OrderService {
                 .customerId(o.getCustomer().getId())
                 .customerName(o.getCustomer().getFullName())
                 .customerPhone(o.getCustomer().getPhone())
-                .doctorName(o.getDoctor() != null ? o.getDoctor().getFullName() : null)
+                .doctorName(o.getDoctor() != null ? o.getDoctor().getName() : null)
                 .service(o.getService())
                 .totalPrice(o.getTotalPrice())
                 .status(o.getStatus())

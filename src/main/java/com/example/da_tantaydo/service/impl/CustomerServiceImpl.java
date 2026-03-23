@@ -10,10 +10,12 @@ import com.example.da_tantaydo.repository.*;
 import com.example.da_tantaydo.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -40,7 +42,6 @@ public class CustomerServiceImpl implements CustomerService {
 
         customer.setFullName(request.getFullName());
         customer.setPhone(request.getPhone());
-        customer.setCccd(request.getCccd());
         customer.setAddress(request.getAddress());
 
         if (request.getDate() != null) {
@@ -60,28 +61,25 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Page<AppointmentResponseDTO> getMyAppointments(String gmail,
-                                                          int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
+    public List<AppointmentResponseDTO> getMyAppointments(Authentication authentication) {
+        String gmail = authentication.getName();
         return appointmentRepository
-                .findByCustomerUserGmailOrderByCreatedAtDesc(gmail, pageable)
+                .findByCustomerUserGmailOrderByCreateAtDesc(gmail)
+                .stream()
                 .map(a -> AppointmentResponseDTO.builder()
                         .id(a.getId())
-                        .customerId(a.getCustomer().getId())
-                        .customerName(a.getCustomer().getFullName())
-                        .customerPhone(a.getCustomer().getPhone())
-                        .doctorId(a.getDoctor().getId())
-                        .doctorName(a.getDoctor().getFullName())
-                        .scheduleId(a.getSchedule().getId())
-                        .workDate(a.getSchedule().getWorkDate())
-                        .startTime(a.getSchedule().getStartTime())
-                        .endTime(a.getSchedule().getEndTime())
-                        .service(a.getService())
-                        .reason(a.getReason())
+                        .name(a.getNameCustomer())
+                        .date(a.getYear())
+                        .phone(a.getPhone())
+                        .gmail(a.getGmail())
+                        .address(a.getAddress())
+                        .createdAt(a.getCreateAt() != null ? a.getCreateAt().toString() : null)
+                        .doctorName(a.getDoctor() != null ? a.getDoctor().getName() : null)
+                        .timeOpen(a.getTimeopen())
                         .note(a.getNote())
-                        .status(a.getStatus())
-                        .createdAt(a.getCreatedAt())
-                        .build());
+                        .status(a.getStatus() != null ? a.getStatus().name() : null)
+                        .build())
+                .toList();
     }
 
     @Override
@@ -98,7 +96,7 @@ public class CustomerServiceImpl implements CustomerService {
                         .customerName(o.getCustomer().getFullName())
                         .customerPhone(o.getCustomer().getPhone())
                         .doctorName(o.getDoctor() != null
-                                ? o.getDoctor().getFullName() : null)
+                                ? o.getDoctor().getName() : null)
                         .service(o.getService())
                         .totalPrice(o.getTotalPrice())
                         .status(o.getStatus())
@@ -150,7 +148,6 @@ public class CustomerServiceImpl implements CustomerService {
                 .email(c.getUser().getGmail())
                 .fullName(c.getFullName())
                 .phone(c.getPhone())
-                .cccd(c.getCccd())
                 .date(c.getDate())
                 .address(c.getAddress())
                 .img(getImgUrl(c.getImg()))

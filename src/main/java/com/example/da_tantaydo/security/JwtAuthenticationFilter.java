@@ -52,7 +52,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (SecurityContextHolder.getContext().getAuthentication() == null) {
                 String gmail = jwtUtil.getGmailFromToken(token);
                 User user = userRepository.findByGmail(gmail)
-                        .orElseThrow(() -> new ChangeSetPersister.NotFoundException("User not found"));
+                        .orElseThrow(() -> new ChangeSetPersister.NotFoundException());
 
                 List<GrantedAuthority> authorities = user.getRole().getRolePermissions()
                         .stream()

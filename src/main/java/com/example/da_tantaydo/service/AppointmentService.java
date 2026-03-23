@@ -5,15 +5,17 @@ import com.example.da_tantaydo.model.dto.request.AppointmentUpdateStatusDTO;
 import com.example.da_tantaydo.model.dto.response.AppointmentResponseDTO;
 import com.example.da_tantaydo.model.enums.AppointmentStatus;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.Authentication;
+
+import java.util.List;
 
 public interface AppointmentService {
-    AppointmentResponseDTO create(AppointmentRequestDTO request);
-    AppointmentResponseDTO updateStatus(Long id, AppointmentUpdateStatusDTO request);
-    void cancel(Long id, String gmail); // CUSTOMER HỦY LỊCH CỦA MÌNH
-    AppointmentResponseDTO getById(Long id);
-    Page<AppointmentResponseDTO> getAll(int page, int size);
-    Page<AppointmentResponseDTO> getByStatus(AppointmentStatus status, int page, int size);
-    Page<AppointmentResponseDTO> getByDoctor(Long doctorId, int page, int size);
-    Page<AppointmentResponseDTO> getByGmail(String gmail, int page, int size); // CUSTOMER XEM LỊCH
-    Page<AppointmentResponseDTO> search(String keyword, int page, int size);
+    void create(AppointmentRequestDTO request, Authentication authentication);
+    void updateStatus(Long id, AppointmentUpdateStatusDTO request);
+    void cancel(Long id, AppointmentUpdateStatusDTO request);
+    List<AppointmentResponseDTO> getAll();
+    List<AppointmentResponseDTO> getByStatus(AppointmentStatus status);
+    List<AppointmentResponseDTO> getByDoctor(Authentication authentication);
+    List<AppointmentResponseDTO> getByGmail(String gmail);
+    List<AppointmentResponseDTO> search(String keyword);
 }

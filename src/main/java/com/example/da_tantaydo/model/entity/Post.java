@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Post {
+public class Post  extends BaseCreatedEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,13 +26,18 @@ public class Post {
     private String content;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "TYPE")
-    private PostType type;
+    @Column(name = "status")
+    private PostType status;
 
     @ManyToOne
-    @JoinColumn(name = "CREATED_BY")
-    private Employee createdBy;
+    @JoinColumn(name ="CATEGORY_ID")
+    private  Category category;
 
-    @Column(name = "CREATED_AT")
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @Column(name ="PUBLISHED_AT")
+    private LocalDateTime publishedAt;
+
+    @Column(name ="IMG")
+    private String img;
+
+
 }

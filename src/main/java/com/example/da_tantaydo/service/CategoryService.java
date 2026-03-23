@@ -8,6 +8,5 @@ public interface CategoryService {
     CategoryResponseDTO create(CategoryRequestDTO request);
     CategoryResponseDTO update(Long id, CategoryRequestDTO request);
     void delete(Long id);
-    CategoryResponseDTO getById(Long id);
     List<CategoryResponseDTO> getAll();
 }

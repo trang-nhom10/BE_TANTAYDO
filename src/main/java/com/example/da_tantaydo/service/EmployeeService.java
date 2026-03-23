@@ -1,18 +1,16 @@
 package com.example.da_tantaydo.service;
 
-
 import com.example.da_tantaydo.model.dto.request.*;
 import com.example.da_tantaydo.model.dto.response.EmployeeResponseDTO;
-import org.springframework.data.domain.Page;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.multipart.MultipartFile;
+import java.util.List;
 
 public interface EmployeeService {
-    // ADMIN
-    EmployeeResponseDTO create(EmployeeCreateDTO request);
-    EmployeeResponseDTO updateRole(Long id, EmployeeUpdateRoleDTO request);
+    void create(EmployeeCreateDTO request);
+    void updateRole(Long id, EmployeeUpdateRoleDTO request);
     void delete(Long id);
-    Page<EmployeeResponseDTO> getAll(int page, int size);
-    Page<EmployeeResponseDTO> search(String keyword, int page, int size);
-    EmployeeResponseDTO getById(Long id);
-    EmployeeResponseDTO updateProfile(String gmail, EmployeeRequestDTO request, MultipartFile img);
+    List<EmployeeResponseDTO> getAll();
+    List<EmployeeResponseDTO> search(String fullName,String address);
+    List<EmployeeResponseDTO> updateProfile(Authentication authentication, EmployeeRequestDTO request, MultipartFile img);
 }

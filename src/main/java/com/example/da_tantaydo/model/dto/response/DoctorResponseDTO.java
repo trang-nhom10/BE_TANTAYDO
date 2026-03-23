@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class DoctorResponseDTO {
     private Long id;
     private String email;
-    private String fullName;
+    private String name;
     private String phone;
     private String specialized;
     private String information;

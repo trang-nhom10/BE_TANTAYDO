@@ -7,6 +7,8 @@ import com.example.da_tantaydo.repository.CategoryRepository;
 import com.example.da_tantaydo.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +26,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = Category.builder()
                 .name(request.getName())
                 .description(request.getDescription())
+                .createdAt(LocalDateTime.now())
                 .build();
 
         return toDTO(categoryRepository.save(category));
@@ -34,8 +37,13 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Category not found."));
 
-        category.setName(request.getName());
-        category.setDescription(request.getDescription());
+        if (request.getName() != null) {
+            category.setName(request.getName());
+        }
+
+        if (request.getDescription() != null) {
+            category.setDescription(request.getDescription());
+        }
 
         return toDTO(categoryRepository.save(category));
     }
@@ -45,12 +53,6 @@ public class CategoryServiceImpl implements CategoryService {
         if (!categoryRepository.existsById(id))
             throw new RuntimeException("Category not found.");
         categoryRepository.deleteById(id);
-    }
-
-    @Override
-    public CategoryResponseDTO getById(Long id) {
-        return toDTO(categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Category not found.")));
     }
 
     @Override

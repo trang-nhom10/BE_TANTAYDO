@@ -33,21 +33,7 @@ public class AuthenController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequestDTO request){
-        try {
-            userService.register(request);
-            return ResponseEntity.ok(ResponseDTO.builder()
-                    .status("ok")
-                    .code(200)
-                    .message("Account registration successful.")
-                    .build());
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ResponseDTO.builder()
-                            .status("error")
-                            .code(400)
-                            .data(null)
-                            .message(e.getMessage())
-                            .build());
-        }
+        userService.register(request);
+        return ResponseEntity.ok( "register success");
     }
 }

@@ -32,10 +32,4 @@ public interface DoctorScheduleRepository extends JpaRepository<DoctorSchedule, 
             @Param("endTime")   LocalTime endTime,
             @Param("excludeId") Long excludeId
     );
-    @Query("""
-        SELECT COUNT(a) FROM Appointment a
-        WHERE a.schedule.id = :scheduleId
-        AND a.status != 'CANCELLED'
-    """)
-    int countCurrentPatient(@Param("scheduleId") Long scheduleId);
 }

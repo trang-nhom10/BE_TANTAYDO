@@ -27,23 +27,32 @@ public class Appointment {
     @JoinColumn(name = "DOCTOR_ID", nullable = false)
     private Doctor doctor;
 
-    @ManyToOne
-    @JoinColumn(name = "SCHEDULE_ID", nullable = false)
-    private DoctorSchedule schedule;
+    @Column(name = "NAME_CUSTOMER")
+    private String nameCustomer;
 
-    @Column(name = "SERVICE")
-    private String service;
+    @Column(name = "YEAR")
+    private LocalDateTime year;
 
-    @Column(name = "REASON")
-    private String reason;
+    @Column(name ="PHONE")
+    private String phone;
 
-    @Column(name = "NOTE")
-    private String note;
+    @Column(name ="GMAIL")
+    private String gmail;
 
-    @Enumerated(EnumType.STRING)
+    @Column(name = "ADDRESS")
+    private  String  address;
+
+    @Column(name ="CEATED_AT")
+    private LocalDateTime createAt;
+
+    @Column(name ="TIMEOPEN")
+    private LocalDateTime timeopen;
+
+    @Column(name ="NOTE")
+    private  String note;
+
     @Column(name = "STATUS")
-    private AppointmentStatus status = AppointmentStatus.PENDING;
+    @Enumerated(EnumType.STRING)
+    private AppointmentStatus status;
 
-    @Column(name = "CREATED_AT")
-    private LocalDateTime createdAt = LocalDateTime.now();
 }

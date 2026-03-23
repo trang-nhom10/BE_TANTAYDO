@@ -13,6 +13,5 @@ public interface DoctorScheduleService {
     DoctorScheduleResponseDTO getById(Long id);
     List<DoctorScheduleResponseDTO> getAll();
     List<DoctorScheduleResponseDTO> getByDoctor(Long doctorId);
-    List<DoctorScheduleResponseDTO> getByDate(LocalDate date);
-    void checkAndUpdateStatus(Long scheduleId); // GỌI SAU KHI ĐẶT LỊCH
+    List<DoctorScheduleResponseDTO> getByDate(LocalDate date);// GỌI SAU KHI ĐẶT LỊCH
 }

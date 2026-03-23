@@ -10,7 +10,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterRequestDTO {
+public class DoctorCreateRequestDTO {
     private String gmail;
-    private String password;
+    private String name;
+    private String specialized;
+
 }

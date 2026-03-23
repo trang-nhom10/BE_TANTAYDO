@@ -21,22 +21,21 @@ public class MediaStorageService {
     public String uploadMedia(MultipartFile file) {
         try {
             String contentType = file.getContentType();
-            if (contentType == null || (!contentType.startsWith("image") && !contentType.startsWith("video")))
-                throw new RuntimeException("Invalid media type");
+            if (contentType == null || !contentType.startsWith("image"))
+                throw new RuntimeException("Chỉ chấp nhận file ảnh");
 
-            boolean isImage = contentType.startsWith("image");
-            String type = isImage ? "image" : "video";
+            String folderName = "Nhakhoa/images";
 
             DataSource dataSource = new DataSource();
-            dataSource.setMediaType(isImage ? "IMAGE" : "VIDEO");
-            dataSource.setData(isImage ? file.getBytes() : null);
+            dataSource.setMediaType("IMAGE");
+            dataSource.setData(file.getBytes());
             dataSource = dataSourceRepository.save(dataSource);
 
-            String publicId = type + "_" + dataSource.getId();
+            String publicId = "image_" + dataSource.getId();
             Map<?, ?> result = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap(
-                    "folder", type + "s",
+                    "folder", folderName,
                     "public_id", publicId,
-                    "resource_type", type
+                    "resource_type", "image"
             ));
 
             dataSource.setPublicId(publicId);
@@ -56,7 +55,7 @@ public class MediaStorageService {
         try {
             if (dataSource.getPublicId() != null) {
                 cloudinary.uploader().destroy(dataSource.getPublicId(), ObjectUtils.asMap(
-                        "resource_type", "VIDEO".equals(dataSource.getMediaType()) ? "video" : "image"
+                        "resource_type", "image"
                 ));
             }
         } catch (Exception e) {

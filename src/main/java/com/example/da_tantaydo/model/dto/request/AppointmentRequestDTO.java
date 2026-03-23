@@ -1,6 +1,9 @@
 package com.example.da_tantaydo.model.dto.request;
 
+import com.example.da_tantaydo.model.entity.Doctor;
 import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -9,8 +12,13 @@ import lombok.*;
 public class AppointmentRequestDTO {
     private Long customerId;
     private Long doctorId;
-    private Long scheduleId;
-    private String service;
-    private String reason;
+    private  String name;
+    private LocalDateTime date;
+    private String phone;
+    private String gmail;
+    private String address;
+    private String createdAt;
+    private Doctor doctor;
+    private  LocalDateTime timeOpen;
     private String note;
 }

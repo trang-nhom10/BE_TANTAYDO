@@ -1,17 +1,17 @@
 package com.example.da_tantaydo.controller;
 
-
 import com.example.da_tantaydo.model.dto.request.AppointmentRequestDTO;
 import com.example.da_tantaydo.model.dto.request.AppointmentUpdateStatusDTO;
 import com.example.da_tantaydo.model.dto.response.AppointmentResponseDTO;
+import com.example.da_tantaydo.model.dto.response.ResponseDTO;
 import com.example.da_tantaydo.model.enums.AppointmentStatus;
 import com.example.da_tantaydo.service.AppointmentService;
+import com.example.da_tantaydo.service.CustomerService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/appointments")
@@ -19,90 +19,67 @@ import org.springframework.web.bind.annotation.*;
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
-
-    //  KHÁCH HÀNG ĐẶT LỊCH
+    private final CustomerService customerService;
+//KHÁCH HÀNG ĐẶT
     @PostMapping("/create")
-    @PreAuthorize("hasAuthority('CUSTOMER_BOOK_APPOINTMENT')")
-    public ResponseEntity<AppointmentResponseDTO> create(
-            @RequestBody AppointmentRequestDTO request) {
-        return ResponseEntity.ok(appointmentService.create(request));
+    public ResponseEntity<?> create(
+            @RequestBody AppointmentRequestDTO request,
+            Authentication authentication) {
+        appointmentService.create(request, authentication);
+        return ResponseEntity.ok("Create success");
     }
-
-    //  ADMIN/NHÂN VIÊN CẬP NHẬT TRẠNG THÁI
-    @PutMapping("/update/status/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_APPOINTMENT','EMPLOYEE_MANAGE_APPOINTMENT')")
-    public ResponseEntity<AppointmentResponseDTO> updateStatus(
+//DÀNH CHO BÁC SĨ
+    @PostMapping("/update/status/{id}")
+    public ResponseEntity<?> updateStatus(
             @PathVariable Long id,
             @RequestBody AppointmentUpdateStatusDTO request) {
-        return ResponseEntity.ok(appointmentService.updateStatus(id, request));
-    }
+        appointmentService.updateStatus(id, request);
+        return ResponseEntity.ok("update success");
 
-    //  CUSTOMER HỦY LỊCH CỦA MÌNH
-    @DeleteMapping("cancel/{id}")
-    @PreAuthorize("hasAuthority('CUSTOMER_BOOK_APPOINTMENT')")
+    }
+//khách hủy đơn
+    @PostMapping("/cancel/{id}")
     public ResponseEntity<String> cancel(
-            @PathVariable Long id,
-            Authentication authentication) {
-        appointmentService.cancel(id, authentication.getName());
-        return ResponseEntity.ok("Hủy lịch hẹn thành công");
+            @PathVariable Long id,AppointmentUpdateStatusDTO request) {
+        appointmentService.cancel(id,request);
+        return ResponseEntity.ok("cancel success");
     }
-
-    //  LẤY CHI TIẾT
-    @GetMapping("details/{id}")
-    @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_APPOINTMENT','EMPLOYEE_MANAGE_APPOINTMENT')")
-    public ResponseEntity<AppointmentResponseDTO> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(appointmentService.getById(id));
-    }
-
-    //  ADMIN/NHÂN VIÊN - LẤY TẤT CẢ PHÂN TRANG
+//admin xem full lịch đặt
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_APPOINTMENT','EMPLOYEE_MANAGE_APPOINTMENT')")
-    public ResponseEntity<Page<AppointmentResponseDTO>> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(appointmentService.getAll(page, size));
+    public ResponseEntity<List<AppointmentResponseDTO>> getAll() {
+        return ResponseEntity.ok(appointmentService.getAll());
     }
 
-    //  LỌC THEO TRẠNG THÁI
-    // GET /api/appointments/status?status=PENDING&page=0&size=10
-    @GetMapping("/status")
-    @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_APPOINTMENT','EMPLOYEE_MANAGE_APPOINTMENT')")
-    public ResponseEntity<Page<AppointmentResponseDTO>> getByStatus(
-            @RequestParam AppointmentStatus status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(appointmentService.getByStatus(status, page, size));
+    //tìm theo trạng thái
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<AppointmentResponseDTO>> getByStatus(
+            @PathVariable AppointmentStatus status) {
+        return ResponseEntity.ok(appointmentService.getByStatus(status));
     }
-
-    //  LẤY LỊCH THEO BÁC SĨ
-    @GetMapping("/doctor/{doctorId}")
-    @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_APPOINTMENT','EMPLOYEE_MANAGE_APPOINTMENT')")
-    public ResponseEntity<Page<AppointmentResponseDTO>> getByDoctor(
-            @PathVariable Long doctorId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(appointmentService.getByDoctor(doctorId, page, size));
-    }
-
-    // CUSTOMER XEM LỊCH CỦA MÌNH
-    @GetMapping("/my")
-    @PreAuthorize("hasAuthority('CUSTOMER_BOOK_APPOINTMENT')")
-    public ResponseEntity<Page<AppointmentResponseDTO>> getMyAppointments(
-            Authentication authentication,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+// xem đơn của bác sĩ
+    @GetMapping("/my-appointments")
+    public ResponseEntity<ResponseDTO<List<AppointmentResponseDTO>>> getByDoctor(Authentication authentication) {
+        List<AppointmentResponseDTO> result = appointmentService.getByDoctor(authentication);
         return ResponseEntity.ok(
-                appointmentService.getByGmail(authentication.getName(), page, size));
+                ResponseDTO.<List<AppointmentResponseDTO>>builder()
+                        .status("success")
+                        .code(200)
+                        .message("Lấy danh sách lịch hẹn thành công")
+                        .data(result)
+                        .build()
+        );
+    }
+// danh sách  khách hàng đặt đơn mình
+
+    @GetMapping("/my")
+    public ResponseEntity<List<AppointmentResponseDTO>> getMyAppointments(
+            Authentication authentication) {
+        return ResponseEntity.ok(customerService.getMyAppointments(authentication));
     }
 
-    // TÌM KIẾM THEO TÊN/SĐT/DỊCH VỤ/BÁC SĨ
-    // GET /api/appointments/search?keyword=nguyen&page=0&size=10
     @GetMapping("/search")
-    @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_APPOINTMENT','EMPLOYEE_MANAGE_APPOINTMENT')")
-    public ResponseEntity<Page<AppointmentResponseDTO>> search(
-            @RequestParam String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(appointmentService.search(keyword, page, size));
+    public ResponseEntity<List<AppointmentResponseDTO>> search(
+            @RequestParam String keyword) {
+        return ResponseEntity.ok(appointmentService.search(keyword));
     }
 }

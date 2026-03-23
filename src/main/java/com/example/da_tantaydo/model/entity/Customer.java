@@ -27,9 +27,6 @@ public class Customer {
     @Column(name = "PHONE")
     private String phone;
 
-    @Column(name = "CCCD")
-    private String cccd;
-
     @Column(name = "DATE")
     private LocalDateTime date;
 

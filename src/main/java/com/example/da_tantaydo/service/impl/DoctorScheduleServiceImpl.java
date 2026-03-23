@@ -111,30 +111,15 @@ public class DoctorScheduleServiceImpl implements DoctorScheduleService {
                 .stream().map(this::toDTO).collect(Collectors.toList());
     }
 
-    @Override
-    public void checkAndUpdateStatus(Long scheduleId) {
-        DoctorSchedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new RuntimeException("Schedule not found."));
-
-        int current = scheduleRepository.countCurrentPatient(scheduleId);
-
-        if (current >= schedule.getMaxPatient()) {
-            schedule.setStatus(ScheduleStatus.FULL);
-            scheduleRepository.save(schedule);
-        }
-    }
-
     private DoctorScheduleResponseDTO toDTO(DoctorSchedule s) {
-        int current = scheduleRepository.countCurrentPatient(s.getId());
         return DoctorScheduleResponseDTO.builder()
                 .id(s.getId())
                 .doctorId(s.getDoctor().getId())
-                .doctorName(s.getDoctor().getFullName())
+                .doctorName(s.getDoctor().getName())
                 .workDate(s.getWorkDate())
                 .startTime(s.getStartTime())
                 .endTime(s.getEndTime())
                 .maxPatient(s.getMaxPatient())
-                .currentPatient(current)
                 .status(s.getStatus())
                 .build();
     }

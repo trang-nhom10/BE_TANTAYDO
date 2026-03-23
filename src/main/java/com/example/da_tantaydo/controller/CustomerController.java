@@ -4,6 +4,7 @@ import com.example.da_tantaydo.model.dto.request.CustomerProfileRequestDTO;
 import com.example.da_tantaydo.model.dto.response.AppointmentResponseDTO;
 import com.example.da_tantaydo.model.dto.response.CustomerResponseDTO;
 import com.example.da_tantaydo.model.dto.response.OrderResponseDTO;
+//import com.example.da_tantaydo.service.CustomerService;
 import com.example.da_tantaydo.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,7 +23,7 @@ public class CustomerController {
 
     //  KHÁCH XEM THÔNG TIN CỦA MÌNH
     @GetMapping("/profile")
-    @PreAuthorize("hasAuthority('CUSTOMER_UPDATE_PROFILE')")
+//    @PreAuthorize("hasAuthority('CUSTOMER_UPDATE_PROFILE')")
     public ResponseEntity<CustomerResponseDTO> getProfile(
             Authentication authentication) {
         return ResponseEntity.ok(
@@ -42,16 +43,16 @@ public class CustomerController {
 
     //  KHÁCH XEM LỊCH SỬ ĐẶT LỊCH CỦA MÌNH
     // GET /api/customers/my/appointments?page=0&size=10
-    @GetMapping("/my/appointments")
-    @PreAuthorize("hasAuthority('CUSTOMER_BOOK_APPOINTMENT')")
-    public ResponseEntity<Page<AppointmentResponseDTO>> getMyAppointments(
-            Authentication authentication,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(
-                customerService.getMyAppointments(
-                        authentication.getName(), page, size));
-    }
+//    @GetMapping("/my/appointments")
+//    @PreAuthorize("hasAuthority('CUSTOMER_BOOK_APPOINTMENT')")
+//    public ResponseEntity<Page<AppointmentResponseDTO>> getMyAppointments(
+//            Authentication authentication,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size) {
+//        return ResponseEntity.ok(
+//                customerService.getMyAppointments(
+//                        authentication.getName(), page, size));
+//    }
 
     //  KHÁCH XEM LỊCH SỬ ĐƠN HÀNG CỦA MÌNH
     // GET /api/customers/my/orders?page=0&size=10

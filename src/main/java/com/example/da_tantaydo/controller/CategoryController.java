@@ -17,31 +17,29 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping("/create")
-    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
-    public ResponseEntity<CategoryResponseDTO> create(
+//    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
+    public ResponseEntity<?> create(
             @RequestBody CategoryRequestDTO request) {
-        return ResponseEntity.ok(categoryService.create(request));
+        categoryService.create(request);
+         return ResponseEntity.ok("create success");
     }
 
     @PostMapping("/update/{id}")
-    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
-    public ResponseEntity<CategoryResponseDTO> update(
+//    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
+    public ResponseEntity<?> update(
             @PathVariable Long id,
             @RequestBody CategoryRequestDTO request) {
-        return ResponseEntity.ok(categoryService.update(id, request));
+        categoryService.update(id, request);
+        return ResponseEntity.ok("update success");
     }
 
     @PostMapping("delete/{id}")
-    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
+//    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         categoryService.delete(id);
-        return ResponseEntity.ok("Xóa danh mục thành công");
+        return ResponseEntity.ok("delete success");
     }
 
-    @GetMapping("details/{id}")
-    public ResponseEntity<CategoryResponseDTO> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(categoryService.getById(id));
-    }
 
     @GetMapping("/getall")
     public ResponseEntity<List<CategoryResponseDTO>> getAll() {

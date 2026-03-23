@@ -2,7 +2,6 @@ package com.example.da_tantaydo.service.impl;
 
 import com.example.da_tantaydo.model.dto.response.ProfileResponseDTO;
 import com.example.da_tantaydo.model.entity.Customer;
-import com.example.da_tantaydo.model.entity.Doctor;
 import com.example.da_tantaydo.model.entity.Role;
 import com.example.da_tantaydo.model.entity.User;
 import com.example.da_tantaydo.model.enums.Status;
@@ -55,30 +54,16 @@ public class UserServiceimpl implements UserService {
         if (userRepository.findByGmail(request.getGmail()).isPresent()) {
             throw new BadCredentialsException("Gmail already exists");
         }
-
-        Long roleId = request.getRole();
-        if (roleId == null || (!roleId.equals(3L))) {
-            throw new IllegalArgumentException("Registration is only permitted as a customer.");
-        }
-
-        Role role = roleRepository.findById(roleId).orElseThrow(() -> new RuntimeException("Role not found"));
+        Role role = roleRepository.findById(3L).orElseThrow(() -> new RuntimeException("Role not found."));
         User user = new User();
         user.setGmail(request.getGmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setStatus(Status.ACTIVE);
         user.setRole(role);
         User savedUser = userRepository.save(user);
-        if (roleId.equals(3L)) {
             Customer customer = new Customer();
             customer.setUser(savedUser);
             customerRepository.save(customer);
-        }
-        if (roleId.equals(4L)) {
-            Doctor merchant = new Doctor();
-            merchant.setUser(savedUser);
-            doctorRepository.save(merchant);
-        }
-
         return savedUser;
     }
 

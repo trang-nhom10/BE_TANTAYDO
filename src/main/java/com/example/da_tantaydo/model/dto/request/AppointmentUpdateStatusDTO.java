@@ -10,5 +10,4 @@ import lombok.*;
 @AllArgsConstructor
 public class AppointmentUpdateStatusDTO {
     private AppointmentStatus status;
-    private String note;
 }

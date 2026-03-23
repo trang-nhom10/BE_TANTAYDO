@@ -1,13 +1,15 @@
 package com.example.da_tantaydo.controller;
 import com.example.da_tantaydo.model.dto.request.PostRequestDTO;
-import com.example.da_tantaydo.model.dto.response.PostResponseDTO;
+import com.example.da_tantaydo.model.dto.response.ResponseDTO;
 import com.example.da_tantaydo.model.enums.PostType;
 import com.example.da_tantaydo.service.PostService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/posts")
@@ -16,49 +18,47 @@ public class PostController {
 
     private final PostService postService;
 
-    @PostMapping
-    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
-    public ResponseEntity<PostResponseDTO> create(
-            @RequestBody PostRequestDTO request) {
-        return ResponseEntity.ok(postService.create(request));
+    @GetMapping("/getall")
+    public ResponseEntity<?> getAll() {
+        return ResponseEntity.ok(Map.of(
+                "message", "Get all success",
+                "data", postService.getAll()
+        ));
     }
 
-    @PutMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
-    public ResponseEntity<PostResponseDTO> update(
+    @PostMapping( value = "/create",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
+    public ResponseEntity<?> create(@RequestPart PostRequestDTO request,
+                                    @RequestPart(required = false)  MultipartFile img) {
+        postService.create(request,img);
+        return  ResponseEntity.ok("create success");
+    }
+
+    @PostMapping( value = "/update/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+//    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
+    public ResponseEntity<?> update(
             @PathVariable Long id,
-            @RequestBody PostRequestDTO request) {
-        return ResponseEntity.ok(postService.update(id, request));
+            @RequestPart PostRequestDTO request,
+            @RequestPart(required = false)  MultipartFile img) {
+        postService.update(id,request,img);
+         return  ResponseEntity.ok(" update success");
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
+    @PostMapping("/delete/{id}")
+//    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         postService.delete(id);
-        return ResponseEntity.ok("Xóa bài viết thành công");
+        return ResponseEntity.ok("delete success");
     }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<PostResponseDTO> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(postService.getById(id));
-    }
-
-    // LẤY TẤT CẢ - MỚI NHẤT TRƯỚC - PHÂN TRANG
-    // GET /api/posts?page=0&size=10
-    @GetMapping
-    public ResponseEntity<Page<PostResponseDTO>> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(postService.getAll(page, size));
-    }
-
-    // LẤY THEO TRẠNG THÁI - MỚI NHẤT TRƯỚC
-    // GET /api/posts/type?type=PUBLISHED&page=0&size=10
-    @GetMapping("/type")
-    public ResponseEntity<Page<PostResponseDTO>> getByType(
-            @RequestParam PostType type,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(postService.getByType(type, page, size));
+    @GetMapping("/search")
+    public ResponseEntity<?> search(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) PostType status) {
+        return ResponseEntity.ok(ResponseDTO.builder()
+                .status("oke")
+                .code(200)
+                .message("search success")
+                .data(postService.search(title,status))
+                .build());
     }
 }

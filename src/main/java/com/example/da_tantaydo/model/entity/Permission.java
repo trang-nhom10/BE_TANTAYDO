@@ -20,6 +20,6 @@ public class Permission {
     @Column(name = "PERMISSION_CODE")
     private String permissionCode;
 
-    @Column(name = "PERMISSION_NAME")
-    private String permissionName;
+    @Column(name = "API_SOURCE")
+    private String apiSource;
 }

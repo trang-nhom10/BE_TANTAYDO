@@ -23,7 +23,7 @@ public class Doctor {
     private User user;
 
     @Column(name = "NAME")
-    private String fullName;
+    private String name;
 
     @Column(name = "PHONE")
     private String phone;

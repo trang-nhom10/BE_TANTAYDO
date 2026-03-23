@@ -14,7 +14,9 @@ public class PostResponseDTO {
     private Long id;
     private String title;
     private String content;
-    private PostType type;
-    private String createdByName; // TÊN NHÂN VIÊN TẠO
+    private String status;
+    private String img;
+    private LocalDateTime publishedAt;
     private LocalDateTime createdAt;
+    private LocalDateTime updateAt;
 }

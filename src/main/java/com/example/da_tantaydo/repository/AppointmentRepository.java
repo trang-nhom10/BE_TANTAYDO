@@ -2,30 +2,28 @@ package com.example.da_tantaydo.repository;
 
 import com.example.da_tantaydo.model.entity.Appointment;
 import com.example.da_tantaydo.model.enums.AppointmentStatus;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import java.util.List;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
 
-    Page<Appointment> findByCustomerUserGmailOrderByCreatedAtDesc(String gmail, Pageable pageable);
-    Page<Appointment> findByDoctorIdOrderByCreatedAtDesc(Long doctorId, Pageable pageable);
-    Page<Appointment> findByStatusOrderByCreatedAtDesc(AppointmentStatus status, Pageable pageable);
-    boolean existsByCustomerIdAndScheduleId(Long customerId, Long scheduleId);
-    @Query("""
-        SELECT COUNT(a) FROM Appointment a
-        WHERE a.schedule.id = :scheduleId
-        AND a.status != 'CANCELLED'
-    """)
-    int countActiveByScheduleId(@Param("scheduleId") Long scheduleId);
+    List<Appointment> findByCustomerUserGmailOrderByCreateAtDesc(String gmail);
+    List<Appointment> findByDoctorIdOrderByCreateAtDesc(Long doctorId);
+    List<Appointment> findByStatusOrderByCreateAtDesc(AppointmentStatus status);
+
     @Query("""
         SELECT a FROM Appointment a
-        WHERE LOWER(a.customer.fullName) LIKE LOWER(CONCAT('%', :keyword, '%'))
-        OR a.customer.phone LIKE CONCAT('%', :keyword, '%')
-        OR LOWER(a.service) LIKE LOWER(CONCAT('%', :keyword, '%'))
-        OR LOWER(a.doctor.fullName) LIKE LOWER(CONCAT('%', :keyword, '%'))
+        WHERE LOWER(a.nameCustomer) LIKE LOWER(CONCAT('%', :keyword, '%'))
+        OR a.phone LIKE CONCAT('%', :keyword, '%')
+        OR a.gmail LIKE CONCAT('%', :keyword, '%')
+        OR LOWER(a.doctor.name) LIKE LOWER(CONCAT('%', :keyword, '%'))
+        OR LOWER(a.customer.fullName) LIKE LOWER(CONCAT('%', :keyword, '%'))
+        ORDER BY a.createAt DESC
     """)
-    Page<Appointment> search(@Param("keyword") String keyword, Pageable pageable);
+    List<Appointment> search(@Param("keyword") String keyword);
+
+    @Query("SELECT a FROM Appointment a WHERE a.gmail = :gmail")
+    List<Appointment> findMyAppointments(@Param("gmail") String gmail);
 }
