@@ -31,7 +31,7 @@ public class PostDTO  {
         this.content = post.getContent();
         this.status =post.getStatus();
         this.category=post.getCategory();
-        this.publishedAt=post.getPublishedAt();
+        this.publishedAt= post.getPublishedAt().atStartOfDay();
         this.img=post.getImg();
         this.createAt= post.getCreatedAt();
         this.updateAt=post.getUpdateAt();
