@@ -34,7 +34,7 @@ public class PostController {
         return  ResponseEntity.ok("create success");
     }
 
-    @PostMapping( value = "/update/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping( value ="/update/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 //    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
     public ResponseEntity<?> update(
             @PathVariable Long id,

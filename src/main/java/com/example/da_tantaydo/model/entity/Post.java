@@ -3,6 +3,8 @@ package com.example.da_tantaydo.model.entity;
 import com.example.da_tantaydo.model.enums.PostType;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -34,7 +36,7 @@ public class Post  extends BaseCreatedEntity{
     private  Category category;
 
     @Column(name ="PUBLISHED_AT")
-    private LocalDateTime publishedAt;
+    private LocalDate publishedAt;
 
     @Column(name ="IMG")
     private String img;

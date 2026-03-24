@@ -4,6 +4,7 @@ package com.example.da_tantaydo.model.dto.request;
 import com.example.da_tantaydo.model.enums.PostType;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -16,4 +17,6 @@ public class PostRequestDTO {
     private PostType status;
     private Long category;
     private LocalDateTime createAt;
+    private LocalDate publishedAt;
+
 }
