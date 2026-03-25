@@ -37,7 +37,7 @@ public class DoctorController {
     }
 
     @GetMapping("/getall")
-    @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_DOCTOR','DOCTOR_MANAGER_DOCTOR')")
+    @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_DOCTOR','EMPLOYEE_MANAGE_DOCTOR')")
     public ResponseEntity<?> getAll( ){
         return  ResponseEntity.ok(Map.of(
                 "message", "Get all success",
