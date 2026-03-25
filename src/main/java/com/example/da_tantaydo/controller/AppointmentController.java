@@ -12,14 +12,13 @@ import com.example.da_tantaydo.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/appointments")
@@ -29,8 +28,9 @@ public class AppointmentController {
     private final AppointmentService appointmentService;
     private final CustomerService customerService;
     private final AppointmentFileRepository appointmentFileRepository;
-//KHÁCH HÀNG ĐẶT
+
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('CUSTOMER_MANAGE_APPOINTMENT')")
     public ResponseEntity<?> create(@RequestBody AppointmentRequestDTO request, Authentication authentication) {
         try {
             appointmentService.create(request, authentication);
@@ -41,8 +41,9 @@ public class AppointmentController {
             return ResponseEntity.internalServerError().body("An error occurred. Please try again.");
         }
     }
-//DÀNH CHO BÁC SĨ
+
     @PostMapping("/update/status/{id}")
+    @PreAuthorize("hasAuthority('DOCTOR_MANAGER_APPOINTMENT')")
     public ResponseEntity<?> updateStatus(
             @PathVariable Long id,
             @RequestPart(value = "request") AppointmentUpdateStatusDTO request,
@@ -51,27 +52,29 @@ public class AppointmentController {
         return ResponseEntity.ok("update success");
 
     }
-//khách hủy đơn
+
     @PostMapping("/cancel/{id}")
+    @PreAuthorize("hasAuthority('CUSTOMER_MANAGE_APPOINTMENT')")
     public ResponseEntity<String> cancel(
             @PathVariable Long id,AppointmentUpdateStatusDTO request) {
         appointmentService.cancel(id,request);
         return ResponseEntity.ok("cancel success");
     }
-//admin xem full lịch đặt
     @GetMapping
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE_APPOINTMENT')")
     public ResponseEntity<List<AppointmentResponseDTO>> getAll() {
         return ResponseEntity.ok(appointmentService.getAll());
     }
 
-    //tìm theo trạng thái
     @GetMapping("/status/{status}")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE_APPOINTMENT','DOCTOR_MANAGER_APPOINTMENT','EMPLOYEE_MANAGE_APPOINTMENT')")
     public ResponseEntity<List<AppointmentResponseDTO>> getByStatus(
             @PathVariable AppointmentStatus status) {
         return ResponseEntity.ok(appointmentService.getByStatus(status));
     }
-// xem đơn của bác sĩ
+
     @GetMapping("/my-appointments")
+    @PreAuthorize("hasAuthority('DOCTOR_MANAGER_APPOINTMENT')")
     public ResponseEntity<ResponseDTO<List<AppointmentResponseDTO>>> getByDoctor(Authentication authentication) {
         List<AppointmentResponseDTO> result = appointmentService.getByDoctor(authentication);
         return ResponseEntity.ok(
@@ -83,16 +86,16 @@ public class AppointmentController {
                         .build()
         );
     }
-// danh sách  khách hàng đặt đơn mình
 
     @GetMapping("/my")
+    @PreAuthorize("hasAuthority('DOCTOR_MANAGER_APPOINTMENT')")
     public ResponseEntity<List<AppointmentResponseDTO>> getMyAppointments(
             Authentication authentication) {
         return ResponseEntity.ok(customerService.getMyAppointments(authentication));
     }
 
-    //nhân viên tìm kiếm
     @GetMapping("/search")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE_APPOINTMENT','DOCTOR_MANAGER_APPOINTMENT','EMPLOYEE_MANAGE_APPOINTMENT')")
     public ResponseEntity<?> search(
             @RequestParam(required = false) String nameCustomer,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createAt,
@@ -105,6 +108,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/files")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE_APPOINTMENT','EMPLOYEE_MANAGE_APPOINTMENT')")
     public ResponseEntity<?> getAllFiles() {
         List<AppointmentFile> files = appointmentFileRepository.findAll();
         return ResponseEntity.ok(files);

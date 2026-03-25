@@ -8,6 +8,7 @@ import com.example.da_tantaydo.service.DoctorScheduleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
@@ -16,11 +17,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/schedules")
 @RequiredArgsConstructor
+
 public class DoctorScheduleController {
 
     private final DoctorScheduleService scheduleService;
 
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE_SCHEDULE','EMPLOYEE_MANAGE_SCHEDULE')")
     public ResponseEntity<?> create(@RequestBody DoctorScheduleRequestDTO request) {
         scheduleService.create(request);
         return ResponseEntity.ok("create success");
@@ -28,7 +31,7 @@ public class DoctorScheduleController {
     }
 
     @PostMapping("update/{id}")
-//    @PreAuthorize("hasAuthority('ADMIN_MANAGE_SCHEDULE')")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE_SCHEDULE','EMPLOYEE_MANAGE_SCHEDULE')")
     public ResponseEntity<?> update(
             @PathVariable Long id,
             @RequestBody DoctorScheduleRequestDTO request) {
@@ -37,23 +40,26 @@ public class DoctorScheduleController {
     }
 
     @PostMapping("delete/{id}")
-//    @PreAuthorize("hasAuthority('ADMIN_MANAGE_SCHEDULE')")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE_SCHEDULE','EMPLOYEE_MANAGE_SCHEDULE')")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         scheduleService.delete(id);
         return ResponseEntity.ok("delete success");
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE_SCHEDULE','EMPLOYEE_MANAGE_SCHEDULE')")
     public ResponseEntity<DoctorScheduleResponseDTO> getById(@PathVariable Long id) {
         return ResponseEntity.ok(scheduleService.getById(id));
     }
 
     @GetMapping("/getall")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE_SCHEDULE','EMPLOYEE_MANAGE_SCHEDULE')")
     public ResponseEntity<List<DoctorScheduleResponseDTO>> getAll() {
         return ResponseEntity.ok(scheduleService.getAll());
     }
 
     @GetMapping("/doctor/{doctorId}")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE_SCHEDULE','EMPLOYEE_MANAGE_SCHEDULE')")
     public ResponseEntity<List<DoctorScheduleResponseDTO>> getByDoctor(
             @PathVariable Long doctorId) {
         return ResponseEntity.ok(scheduleService.getByDoctor(doctorId));
@@ -64,14 +70,14 @@ public class DoctorScheduleController {
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         return ResponseEntity.ok(scheduleService.getByDate(date));
     }
-//khách hàng xem lịch null
     @PostMapping("/available-slots")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE_SCHEDULE','EMPLOYEE_MANAGE_SCHEDULE','CUSTOMER_MANAGE_SCHEDULE')")
     public ResponseEntity<List<AvailableSlotDTO>> getAvailableSlots(
             @RequestBody AvailableSlotRequestDTO request) {
         return ResponseEntity.ok(scheduleService.getAvailableSlots(request.getDoctorId(), request.getWorkDate()));
     }
-// xem lịch bác sĩ
     @GetMapping("/today")
+    @PreAuthorize("hasAuthority('DOCTOR_MANAGER_SCHEDULE')")
     public ResponseEntity<?> getTodaySchedule(Authentication authentication) {
         try {
             return ResponseEntity.ok(scheduleService.getTodaySchedule(authentication));

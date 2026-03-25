@@ -10,6 +10,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class AvailableSlotRequestDTO {
     private Long doctorId;
     private LocalDate workDate;

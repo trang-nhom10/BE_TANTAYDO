@@ -8,6 +8,7 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class AppointmentUpdateStatusDTO {
     private AppointmentStatus status;
 }

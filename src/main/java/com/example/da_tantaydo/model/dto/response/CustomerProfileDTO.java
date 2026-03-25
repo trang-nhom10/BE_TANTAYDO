@@ -2,19 +2,19 @@ package com.example.da_tantaydo.model.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
-@Setter
-public class ProfileResponseDTO {
+public class CustomerProfileDTO {
     private String gmail;
     private String role;
-    private  String name;
-    private String img;
     private List<String> permissions;
+    private String fullName;
+    private String phone;
+    private LocalDate date;
+    private String address;
+    private String img;
 
 }

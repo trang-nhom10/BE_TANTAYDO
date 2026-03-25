@@ -3,7 +3,6 @@ package com.example.da_tantaydo.service.impl;
 import com.example.da_tantaydo.helper.MediaStorageService;
 import com.example.da_tantaydo.model.dto.request.DoctorCreateRequestDTO;
 import com.example.da_tantaydo.model.dto.request.DoctorProfileRequestDTO;
-import com.example.da_tantaydo.model.dto.request.EmployeeProfileRequest;
 import com.example.da_tantaydo.model.dto.response.AppointmentResponseDTO;
 import com.example.da_tantaydo.model.dto.response.DoctorResponseDTO;
 import com.example.da_tantaydo.model.entity.*;

@@ -1,6 +1,5 @@
 package com.example.da_tantaydo.service.impl;
 
-import com.example.da_tantaydo.model.dto.response.ProfileResponseDTO;
 import com.example.da_tantaydo.model.entity.Customer;
 import com.example.da_tantaydo.model.entity.Role;
 import com.example.da_tantaydo.model.entity.User;
@@ -32,9 +31,6 @@ public class UserServiceimpl implements UserService {
     private final CustomerRepository customerRepository;
     private final DoctorRepository doctorRepository;
     private final UserCustomRepository userCustomRepository;
-
-
-
 
     @Override
     public LoginReponseDTO login(LoginRequestDto request) {
@@ -68,7 +64,7 @@ public class UserServiceimpl implements UserService {
     }
 
     @Override
-    public ProfileResponseDTO getProfile(String email) {
+    public Object getProfile(String email) {
         return userCustomRepository.getProfileByEmail(email);
     }
 }

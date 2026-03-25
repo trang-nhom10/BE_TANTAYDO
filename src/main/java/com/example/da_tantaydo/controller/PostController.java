@@ -27,7 +27,7 @@ public class PostController {
     }
 
     @PostMapping( value = "/create",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
     public ResponseEntity<?> create(@RequestPart PostRequestDTO request,
                                     @RequestPart(required = false)  MultipartFile img) {
         postService.create(request,img);
@@ -35,7 +35,7 @@ public class PostController {
     }
 
     @PostMapping( value ="/update/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
     public ResponseEntity<?> update(
             @PathVariable Long id,
             @RequestPart PostRequestDTO request,
@@ -45,7 +45,7 @@ public class PostController {
     }
 
     @PostMapping("/delete/{id}")
-//    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         postService.delete(id);
         return ResponseEntity.ok("delete success");

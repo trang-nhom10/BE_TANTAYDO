@@ -8,6 +8,7 @@ import com.example.da_tantaydo.model.dto.response.ResponseDTO;
 import com.example.da_tantaydo.service.DoctorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,21 +23,21 @@ public class DoctorController {
     private final DoctorService doctorService;
 
     @PostMapping("/create")
-//    @PreAuthorize("hasAuthority('ADMIN_MANAGE_DOCTOR')")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE_DOCTOR')")
     public ResponseEntity<?> create(@RequestBody DoctorCreateRequestDTO request) {
        doctorService.create(request);
        return ResponseEntity.ok("create success");
     }
 
     @PostMapping("/delete/{id}")
-//    @PreAuthorize("hasAuthority('ADMIN_MANAGE_DOCTOR')")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE_DOCTOR')")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         doctorService.delete(id);
         return ResponseEntity.ok("delete successs");
     }
 
     @GetMapping("/getall")
-//    @PreAuthorize("hasAuthority('ADMIN_MANAGE_DOCTOR')")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE_DOCTOR')")
     public ResponseEntity<?> getAll( ){
         return  ResponseEntity.ok(Map.of(
                 "message", "Get all success",
@@ -44,7 +45,7 @@ public class DoctorController {
                 ));
     }
     @GetMapping("/search")
-//    @PreAuthorize("hasAuthority('ADMIN_MANAGE_DOCTOR')")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE_DOCTOR')")
     public ResponseEntity<ResponseDTO<List<DoctorResponseDTO>>> search(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String specialized,
@@ -62,6 +63,7 @@ public class DoctorController {
     }
 
     @PostMapping("/upload-profile")
+    @PreAuthorize("hasAuthority('DOCTOR_MANAGER_DOCTOR')")
     public ResponseEntity<?> updateProfile(
             @RequestPart(value = "request") DoctorProfileRequestDTO request,
             @RequestPart(value = "img", required = false) MultipartFile img,
@@ -71,8 +73,8 @@ public class DoctorController {
         return ResponseEntity.ok("Profile updated successfully");
     }
 
-    // BÁC SĨ XEM LỊCH KHÁCH ĐẶT CỦA MÌNH// chưa test
     @GetMapping("/my-appointments")
+    @PreAuthorize("hasAuthority('DOCTOR_MANAGER_DOCTOR')")
     public ResponseEntity<ResponseDTO<List<AppointmentResponseDTO>>> getMyAppointments(Authentication authentication) {
         List<AppointmentResponseDTO> result = doctorService.getMyAppointments(authentication);
         return ResponseEntity.ok(

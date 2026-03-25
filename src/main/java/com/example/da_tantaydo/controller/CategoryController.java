@@ -12,12 +12,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/categories")
 @RequiredArgsConstructor
+
 public class CategoryController {
 
     private final CategoryService categoryService;
 
     @PostMapping("/create")
-//    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
     public ResponseEntity<?> create(
             @RequestBody CategoryRequestDTO request) {
         categoryService.create(request);
@@ -25,7 +26,7 @@ public class CategoryController {
     }
 
     @PostMapping("/update/{id}")
-//    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
     public ResponseEntity<?> update(
             @PathVariable Long id,
             @RequestBody CategoryRequestDTO request) {
@@ -34,7 +35,7 @@ public class CategoryController {
     }
 
     @PostMapping("delete/{id}")
-//    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         categoryService.delete(id);
         return ResponseEntity.ok("delete success");
@@ -42,6 +43,7 @@ public class CategoryController {
 
 
     @GetMapping("/getall")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE_WEB')")
     public ResponseEntity<List<CategoryResponseDTO>> getAll() {
         return ResponseEntity.ok(categoryService.getAll());
     }
