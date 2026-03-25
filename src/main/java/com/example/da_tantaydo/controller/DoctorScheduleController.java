@@ -31,7 +31,7 @@ public class DoctorScheduleController {
     }
 
     @PostMapping("update/{id}")
-    @PreAuthorize("hasAuthority('ADMIN_MANAGE_SCHEDULE','EMPLOYEE_MANAGE_SCHEDULE')")
+    @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_SCHEDULE','EMPLOYEE_MANAGE_SCHEDULE')")
     public ResponseEntity<?> update(
             @PathVariable Long id,
             @RequestBody DoctorScheduleRequestDTO request) {
@@ -40,7 +40,7 @@ public class DoctorScheduleController {
     }
 
     @PostMapping("delete/{id}")
-    @PreAuthorize("hasAuthority('ADMIN_MANAGE_SCHEDULE','EMPLOYEE_MANAGE_SCHEDULE')")
+    @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_SCHEDULE','EMPLOYEE_MANAGE_SCHEDULE')")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         scheduleService.delete(id);
         return ResponseEntity.ok("delete success");
@@ -53,13 +53,13 @@ public class DoctorScheduleController {
     }
 
     @GetMapping("/getall")
-    @PreAuthorize("hasAuthority('ADMIN_MANAGE_SCHEDULE','EMPLOYEE_MANAGE_SCHEDULE','CUSTOMER_MANAGE_SCHEDULE')")
+    @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_SCHEDULE','EMPLOYEE_MANAGE_SCHEDULE','CUSTOMER_MANAGE_SCHEDULE')")
     public ResponseEntity<List<DoctorScheduleResponseDTO>> getAll() {
         return ResponseEntity.ok(scheduleService.getAll());
     }
 
     @GetMapping("/doctor/{doctorId}")
-    @PreAuthorize("hasAuthority('ADMIN_MANAGE_SCHEDULE','EMPLOYEE_MANAGE_SCHEDULE')")
+    @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_SCHEDULE','EMPLOYEE_MANAGE_SCHEDULE')")
     public ResponseEntity<List<DoctorScheduleResponseDTO>> getByDoctor(
             @PathVariable Long doctorId) {
         return ResponseEntity.ok(scheduleService.getByDoctor(doctorId));
@@ -71,13 +71,13 @@ public class DoctorScheduleController {
         return ResponseEntity.ok(scheduleService.getByDate(date));
     }
     @PostMapping("/available-slots")
-    @PreAuthorize("hasAuthority('ADMIN_MANAGE_SCHEDULE','EMPLOYEE_MANAGE_SCHEDULE','CUSTOMER_MANAGE_SCHEDULE')")
+    @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_SCHEDULE','EMPLOYEE_MANAGE_SCHEDULE','CUSTOMER_MANAGE_SCHEDULE')")
     public ResponseEntity<List<AvailableSlotDTO>> getAvailableSlots(
             @RequestBody AvailableSlotRequestDTO request) {
         return ResponseEntity.ok(scheduleService.getAvailableSlots(request.getDoctorId(), request.getWorkDate()));
     }
     @GetMapping("/today")
-    @PreAuthorize("hasAuthority('DOCTOR_MANAGER_SCHEDULE')")
+    @PreAuthorize("hasAnyAuthority('DOCTOR_MANAGER_SCHEDULE')")
     public ResponseEntity<?> getTodaySchedule(Authentication authentication) {
         try {
             return ResponseEntity.ok(scheduleService.getTodaySchedule(authentication));

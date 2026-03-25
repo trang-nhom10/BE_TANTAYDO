@@ -67,7 +67,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/status/{status}")
-    @PreAuthorize("hasAuthority('ADMIN_MANAGE_APPOINTMENT','DOCTOR_MANAGER_APPOINTMENT','EMPLOYEE_MANAGE_APPOINTMENT')")
+    @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_APPOINTMENT','DOCTOR_MANAGER_APPOINTMENT','EMPLOYEE_MANAGE_APPOINTMENT')")
     public ResponseEntity<List<AppointmentResponseDTO>> getByStatus(
             @PathVariable AppointmentStatus status) {
         return ResponseEntity.ok(appointmentService.getByStatus(status));
@@ -95,7 +95,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/search")
-    @PreAuthorize("hasAuthority('ADMIN_MANAGE_APPOINTMENT','DOCTOR_MANAGER_APPOINTMENT','EMPLOYEE_MANAGE_APPOINTMENT')")
+    @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_APPOINTMENT','DOCTOR_MANAGER_APPOINTMENT','EMPLOYEE_MANAGE_APPOINTMENT')")
     public ResponseEntity<?> search(
             @RequestParam(required = false) String nameCustomer,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createAt,
@@ -108,7 +108,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/files")
-    @PreAuthorize("hasAuthority('ADMIN_MANAGE_APPOINTMENT','EMPLOYEE_MANAGE_APPOINTMENT')")
+    @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_APPOINTMENT','EMPLOYEE_MANAGE_APPOINTMENT')")
     public ResponseEntity<?> getAllFiles() {
         List<AppointmentFile> files = appointmentFileRepository.findAll();
         return ResponseEntity.ok(files);
