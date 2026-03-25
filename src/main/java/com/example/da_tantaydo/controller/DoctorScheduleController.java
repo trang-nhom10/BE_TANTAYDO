@@ -23,7 +23,7 @@ public class DoctorScheduleController {
     private final DoctorScheduleService scheduleService;
 
     @PostMapping("/create")
-    @PreAuthorize("hasAuthority('ADMIN_MANAGE_SCHEDULE','EMPLOYEE_MANAGE_SCHEDULE')")
+    @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_SCHEDULE','EMPLOYEE_MANAGE_SCHEDULE')")
     public ResponseEntity<?> create(@RequestBody DoctorScheduleRequestDTO request) {
         scheduleService.create(request);
         return ResponseEntity.ok("create success");
@@ -47,7 +47,7 @@ public class DoctorScheduleController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAuthority('ADMIN_MANAGE_SCHEDULE','EMPLOYEE_MANAGE_SCHEDULE')")
+    @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_SCHEDULE','EMPLOYEE_MANAGE_SCHEDULE')")
     public ResponseEntity<DoctorScheduleResponseDTO> getById(@PathVariable Long id) {
         return ResponseEntity.ok(scheduleService.getById(id));
     }
