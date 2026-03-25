@@ -12,5 +12,5 @@ public interface EmployeeService {
     void delete(Long id);
     List<EmployeeResponseDTO> getAll();
     List<EmployeeResponseDTO> search(String fullName,String address);
-    List<EmployeeResponseDTO> updateProfile(Authentication authentication, EmployeeRequestDTO request, MultipartFile img);
+    void UpdateProFile(String gmail,EmployeeProfileRequest request , MultipartFile img);
 }

@@ -4,7 +4,9 @@ import com.example.da_tantaydo.model.dto.request.AppointmentRequestDTO;
 import com.example.da_tantaydo.model.dto.request.AppointmentUpdateStatusDTO;
 import com.example.da_tantaydo.model.dto.response.AppointmentResponseDTO;
 import com.example.da_tantaydo.model.dto.response.ResponseDTO;
+import com.example.da_tantaydo.model.entity.AppointmentFile;
 import com.example.da_tantaydo.model.enums.AppointmentStatus;
+import com.example.da_tantaydo.repository.AppointmentFileRepository;
 import com.example.da_tantaydo.service.AppointmentService;
 import com.example.da_tantaydo.service.CustomerService;
 import lombok.RequiredArgsConstructor;
@@ -12,9 +14,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/appointments")
@@ -23,6 +28,7 @@ public class AppointmentController {
 
     private final AppointmentService appointmentService;
     private final CustomerService customerService;
+    private final AppointmentFileRepository appointmentFileRepository;
 //KHÁCH HÀNG ĐẶT
     @PostMapping("/create")
     public ResponseEntity<?> create(@RequestBody AppointmentRequestDTO request, Authentication authentication) {
@@ -39,8 +45,9 @@ public class AppointmentController {
     @PostMapping("/update/status/{id}")
     public ResponseEntity<?> updateStatus(
             @PathVariable Long id,
-            @RequestBody AppointmentUpdateStatusDTO request) {
-        appointmentService.updateStatus(id, request);
+            @RequestPart(value = "request") AppointmentUpdateStatusDTO request,
+            @RequestPart(value = "file", required = false) MultipartFile file) {
+        appointmentService.updateStatus(id, request, file);
         return ResponseEntity.ok("update success");
 
     }
@@ -95,5 +102,11 @@ public class AppointmentController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("An error occurred. Please try again.");
         }
+    }
+
+    @GetMapping("/files")
+    public ResponseEntity<?> getAllFiles() {
+        List<AppointmentFile> files = appointmentFileRepository.findAll();
+        return ResponseEntity.ok(files);
     }
 }

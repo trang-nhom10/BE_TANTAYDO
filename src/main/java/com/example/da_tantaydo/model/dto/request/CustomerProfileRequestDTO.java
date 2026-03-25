@@ -11,4 +11,5 @@ public class CustomerProfileRequestDTO {
     private String phone;
     private String date;
     private String address;
+    private String pass;
 }

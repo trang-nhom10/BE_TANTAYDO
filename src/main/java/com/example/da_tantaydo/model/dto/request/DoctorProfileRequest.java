@@ -1,17 +1,17 @@
 package com.example.da_tantaydo.model.dto.request;
 
-import lombok.*;
 
-@Getter
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
 @Setter
-@NoArgsConstructor
+@Getter
 @AllArgsConstructor
-public class DoctorProfileRequestDTO {
-    private String fullName;
+public class DoctorProfileRequest {
+    private String name;
     private String phone;
-    private String specialized;
     private String information;
     private String address;
     private String lever;
-    private String pass;
 }

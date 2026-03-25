@@ -6,15 +6,16 @@ import com.example.da_tantaydo.model.dto.response.AppointmentResponseDTO;
 import com.example.da_tantaydo.model.dto.response.CustomerResponseDTO;
 import com.example.da_tantaydo.model.dto.response.OrderResponseDTO;
 import com.example.da_tantaydo.model.entity.Customer;
+import com.example.da_tantaydo.model.entity.User;
 import com.example.da_tantaydo.repository.*;
 import com.example.da_tantaydo.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -26,6 +27,8 @@ public class CustomerServiceImpl implements CustomerService {
     private final OrderRepository orderRepository;
     private final DataSourceRepository dataSourceRepository;
     private final MediaStorageService mediaStorageService;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
     @Override
     public CustomerResponseDTO getProfile(String gmail) {
@@ -34,30 +37,25 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public CustomerResponseDTO updateProfile(String gmail,
-                                             CustomerProfileRequestDTO request,
-                                             MultipartFile img) {
-        Customer customer = customerRepository.findByUserGmail(gmail)
-                .orElseThrow(() -> new RuntimeException("Customer not found."));
-
-        customer.setFullName(request.getFullName());
-        customer.setPhone(request.getPhone());
-        customer.setAddress(request.getAddress());
-
-        if (request.getDate() != null) {
-            customer.setDate(LocalDateTime.parse(request.getDate(),
-                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+    public void updateProfile(String gmail, CustomerProfileRequestDTO request, MultipartFile img) {
+        User user = userRepository.findByGmail(gmail).orElseThrow(() -> new RuntimeException("User not found"));
+        Customer customer = customerRepository.findByUserGmail(gmail).orElseThrow(() -> new RuntimeException("Customer not found"));
+        if (request.getFullName() != null) customer.setFullName(request.getFullName());
+        if (request.getPhone() != null) customer.setPhone(request.getPhone());
+        if (request.getDate() != null) customer.setDate(LocalDate.parse(request.getDate()));
+        if (request.getAddress() != null) customer.setAddress(request.getAddress());
+        if (request.getPass() != null && !request.getPass().isBlank()) {
+            user.setPassword(passwordEncoder.encode(request.getPass()));
+            userRepository.save(user);
         }
 
         if (img != null && !img.isEmpty()) {
-            if (customer.getImg() != null) {
-                mediaStorageService.deleteMedia(Long.parseLong(customer.getImg()));
-            }
-            String mediaId = mediaStorageService.uploadMedia(img);
-            customer.setImg(mediaId);
+            if (customer.getImg() != null && customer.getImg().matches("\\d+"))
+                mediaStorageService.deleteMedia(Long.valueOf(customer.getImg()));
+            customer.setImg(mediaStorageService.uploadMedia(img));
         }
 
-        return toDTO(customerRepository.save(customer));
+        customerRepository.save(customer);
     }
 
     @Override
@@ -83,39 +81,33 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Page<OrderResponseDTO> getMyOrders(String gmail, int page, int size) {
-        Customer customer = customerRepository.findByUserGmail(gmail)
-                .orElseThrow(() -> new RuntimeException("Customer not found."));
-
-        Pageable pageable = PageRequest.of(page, size);
-        return orderRepository
-                .findByCustomerIdOrderByCreatedAtDesc(customer.getId(), pageable)
-                .map(o -> OrderResponseDTO.builder()
+    public List<OrderResponseDTO> getMyOrders(String gmail) {
+        Customer customer = customerRepository.findByUserGmail(gmail).orElseThrow(() -> new RuntimeException("Customer not found."));
+        return orderRepository.findByCustomerIdOrderByCreatedAtDesc(customer.getId()).stream().map(
+                o -> OrderResponseDTO.builder()
                         .id(o.getId())
                         .customerId(o.getCustomer().getId())
                         .customerName(o.getCustomer().getFullName())
                         .customerPhone(o.getCustomer().getPhone())
                         .doctorName(o.getDoctor() != null
-                                ? o.getDoctor().getName() : null)
+                        ? o.getDoctor().getName() : null)
                         .service(o.getService())
                         .totalPrice(o.getTotalPrice())
                         .status(o.getStatus())
                         .note(o.getNote())
                         .createdAt(o.getCreatedAt())
-                        .build());
+                        .build()).toList();
+
     }
 
     @Override
-    public Page<CustomerResponseDTO> getAll(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size,
-                Sort.by("id").descending());
-        return customerRepository.findAll(pageable).map(this::toDTO);
+    public List<CustomerResponseDTO> getAll() {
+        return customerRepository.findAll().stream().map(this::toDTO).toList();
     }
 
     @Override
-    public Page<CustomerResponseDTO> search(String keyword, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return customerRepository.search(keyword, pageable).map(this::toDTO);
+    public List<CustomerResponseDTO> search(String keyword) {
+        return customerRepository.search(keyword).stream().map(this::toDTO).toList();
     }
 
     @Override
@@ -148,7 +140,7 @@ public class CustomerServiceImpl implements CustomerService {
                 .email(c.getUser().getGmail())
                 .fullName(c.getFullName())
                 .phone(c.getPhone())
-                .date(c.getDate())
+                .date(c.getDate().atStartOfDay())
                 .address(c.getAddress())
                 .img(getImgUrl(c.getImg()))
                 .build();

@@ -6,6 +6,7 @@ import com.example.da_tantaydo.model.dto.response.AppointmentResponseDTO;
 import com.example.da_tantaydo.model.entity.Appointment;
 import com.example.da_tantaydo.model.enums.AppointmentStatus;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -13,7 +14,7 @@ import java.util.List;
 
 public interface AppointmentService {
     void create(AppointmentRequestDTO request, Authentication authentication);
-    void updateStatus(Long id, AppointmentUpdateStatusDTO request);
+    void updateStatus(Long id, AppointmentUpdateStatusDTO request, MultipartFile file);
     void cancel(Long id, AppointmentUpdateStatusDTO request);
     List<AppointmentResponseDTO> getAll();
     List<AppointmentResponseDTO> getByStatus(AppointmentStatus status);

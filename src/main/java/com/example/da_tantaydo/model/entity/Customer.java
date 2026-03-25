@@ -1,7 +1,7 @@
 package com.example.da_tantaydo.model.entity;
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "CUSTOMERS")
@@ -28,7 +28,7 @@ public class Customer {
     private String phone;
 
     @Column(name = "DATE")
-    private LocalDateTime date;
+    private LocalDate date;
 
     @Column(name = "ADDRESS")
     private String address;

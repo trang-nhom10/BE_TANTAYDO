@@ -12,13 +12,14 @@ import com.example.da_tantaydo.service.EmployeeService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
+import java.time.LocalDate;
 import java.util.List;
 
+
+@Transactional
 @Service
 @RequiredArgsConstructor
 public class EmployeeServiceImpl implements EmployeeService {
@@ -28,9 +29,8 @@ public class EmployeeServiceImpl implements EmployeeService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final MediaStorageService mediaStorageService;
-    private final DoctorRepository doctorRepository;
 
-    @Transactional
+
     @Override
     public void create(EmployeeCreateDTO request) {
         if (userRepository.findByGmail(request.getGmail()).isPresent()) throw new BadCredentialsException("Gmail already exists");
@@ -44,6 +44,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             Employee employee = new Employee();
             employee.setFullName(request.getName());
             employee.setGender(Gender.valueOf(request.getGender()));
+            employee.setCreatedAt(LocalDate.parse(String.valueOf(request.getCreatedAt())));
             employee.setUser(saved);
             employeeRepository.save(employee);
 
@@ -51,15 +52,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public void updateRole(Long id, EmployeeUpdateRoleDTO request) {
-        Employee employee = employeeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Employee not found."));
-
-        Role role = roleRepository.findById(request.getRoleId())
-                .orElseThrow(() -> new RuntimeException("Role not found."));
-
+        Employee employee = employeeRepository.findById(id).orElseThrow(() -> new RuntimeException("Employee not found."));
+        Role role = roleRepository.findById(request.getRoleId()).orElseThrow(() -> new RuntimeException("Role not found."));
         employee.getUser().setRole(role);
         userRepository.save(employee.getUser());
-
         employeeRepository.save(employee);
     }
 
@@ -72,26 +68,24 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<EmployeeResponseDTO> updateProfile(Authentication authentication, EmployeeRequestDTO request, MultipartFile img) {
-        String authen = authentication.getName();
-        Employee employee = employeeRepository.findByUserGmail(authen).orElseThrow(() -> new RuntimeException("Employee not found."));
-        employee.setFullName(request.getFullName());
-        employee.setPhone(request.getPhone());
-        employee.setGender(request.getGender());
-        employee.setDate(request.getDate());
-        employee.setAddress(request.getAddress());
-        employee.setCccd(request.getCccd());
-
-        if (img != null && !img.isEmpty()) {
-            if (employee.getImg() != null) {
-                mediaStorageService.deleteMedia(Long.parseLong(employee.getImg()));
-            }
-            String mediaId = mediaStorageService.uploadMedia(img);
-            employee.setImg(mediaId);
+    public void UpdateProFile(String gmail, EmployeeProfileRequest request, MultipartFile img) {
+        User user=userRepository.findByGmail(gmail).orElseThrow(()-> new RuntimeException("user not found "));
+        Employee employee =employeeRepository.findByUserGmail(gmail).orElseThrow(()-> new RuntimeException("user not found "));
+        if ( request.getFullName() !=null) employee.setFullName(request.getFullName());
+        if(request.getPhone() !=null) employee.setPhone(request.getPhone());
+        if( request.getGender() !=null) employee.setGender(Gender.valueOf(request.getGender()));
+        if( request.getAddress() !=null) employee.setAddress(request.getAddress());
+        if(request.getCccd() !=null) employee.setCccd(request.getCccd());
+        if (request.getPass() !=null && request.getPass().isBlank()){
+            user.setPassword(passwordEncoder.encode(request.getPass()));
         }
+        if (img != null && !img.isEmpty()) {
+            if (employee.getImg() != null && employee.getImg().matches("\\d+"))
+                mediaStorageService.deleteMedia(Long.valueOf(employee.getImg()));
+            employee.setImg(mediaStorageService.uploadMedia(img));
+        }
+        employeeRepository.save(employee);
 
-       employeeRepository.save(employee);
-        return null;
     }
 
     @Override

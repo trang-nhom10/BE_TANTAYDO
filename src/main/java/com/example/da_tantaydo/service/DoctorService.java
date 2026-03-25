@@ -1,6 +1,7 @@
 package com.example.da_tantaydo.service;
 import com.example.da_tantaydo.model.dto.request.DoctorCreateRequestDTO;
 import com.example.da_tantaydo.model.dto.request.DoctorProfileRequestDTO;
+import com.example.da_tantaydo.model.dto.request.EmployeeProfileRequest;
 import com.example.da_tantaydo.model.dto.response.AppointmentResponseDTO;
 import com.example.da_tantaydo.model.dto.response.DoctorResponseDTO;
 import org.springframework.security.core.Authentication;
@@ -15,6 +16,6 @@ public interface DoctorService {
     void delete(Long id);
     List<DoctorResponseDTO> getAll();
     List<DoctorResponseDTO> search(String name, String specialized,String lever);
-    void updateProfile(String gmail, DoctorProfileRequestDTO request, MultipartFile img);
     List<AppointmentResponseDTO> getMyAppointments(Authentication authentication);
+    void updateProFile(String gmail, DoctorProfileRequestDTO request, MultipartFile img);
 }

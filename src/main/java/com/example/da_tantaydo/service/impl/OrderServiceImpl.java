@@ -12,6 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
@@ -73,29 +76,27 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Page<OrderResponseDTO> getAll(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return orderRepository.findAllByOrderByCreatedAtDesc(pageable).map(this::toDTO);
+    public List<OrderResponseDTO> getAll() {
+        return orderRepository.findAllByOrderByCreatedAtDesc()
+                .stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     @Override
-    public Page<OrderResponseDTO> getByCustomer(Long customerId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return orderRepository.findByCustomerIdOrderByCreatedAtDesc(customerId, pageable)
-                .map(this::toDTO);
+    public List<OrderResponseDTO> getByCustomer(Long customerId) {
+        return orderRepository.findByCustomerIdOrderByCreatedAtDesc(customerId)
+                .stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     @Override
-    public Page<OrderResponseDTO> getByStatus(OrderStatus status, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return orderRepository.findByStatusOrderByCreatedAtDesc(status, pageable)
-                .map(this::toDTO);
+    public List<OrderResponseDTO> getByStatus(OrderStatus status) {
+        return orderRepository.findByStatusOrderByCreatedAtDesc(status)
+                .stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     @Override
-    public Page<OrderResponseDTO> search(String keyword, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return orderRepository.search(keyword, pageable).map(this::toDTO);
+    public List<OrderResponseDTO> search(String keyword) {
+        return orderRepository.search(keyword)
+                .stream().map(this::toDTO).collect(Collectors.toList());
     }
 
     private OrderResponseDTO toDTO(Order o) {

@@ -1,9 +1,9 @@
 package com.example.da_tantaydo.service.impl;
 
-
 import com.example.da_tantaydo.helper.MediaStorageService;
 import com.example.da_tantaydo.model.dto.request.DoctorCreateRequestDTO;
 import com.example.da_tantaydo.model.dto.request.DoctorProfileRequestDTO;
+import com.example.da_tantaydo.model.dto.request.EmployeeProfileRequest;
 import com.example.da_tantaydo.model.dto.response.AppointmentResponseDTO;
 import com.example.da_tantaydo.model.dto.response.DoctorResponseDTO;
 import com.example.da_tantaydo.model.entity.*;
@@ -47,6 +47,7 @@ public class DoctorServiceImpl implements DoctorService {
                 .user(user)
                 .name(request.getName())
                 .specialized(request.getSpecialized())
+                .createdAt(request.getCreatedAt())
                 .build();
 
         doctorRepository.save(doctor);
@@ -76,26 +77,6 @@ public class DoctorServiceImpl implements DoctorService {
                 .toList();
     }
 
-    @Override
-    public void updateProfile(String gmail, DoctorProfileRequestDTO request, MultipartFile img) {
-        Doctor doctor = doctorRepository.findByUserGmail(gmail).orElseThrow(() -> new RuntimeException("Doctor not found."));
-
-        if (request.getFullName() != null) doctor.setName(request.getFullName());
-        if (request.getPhone() != null) doctor.setPhone(request.getPhone());
-        if (request.getSpecialized() != null) doctor.setSpecialized(request.getSpecialized());
-        if (request.getInformation() != null) doctor.setInformation(request.getInformation());
-        if (request.getAddress() != null) doctor.setAddress(request.getAddress());
-        if (request.getLever() != null) doctor.setLever(request.getLever());
-
-        if (img != null && !img.isEmpty()) {
-            if (doctor.getImg() != null) {
-                mediaStorageService.deleteMedia(Long.parseLong(doctor.getImg()));
-            }
-            String mediaId = mediaStorageService.uploadMedia(img);
-            doctor.setImg(mediaId);
-        }
-      doctorRepository.save(doctor);
-    }
 
     @Override
     public List<AppointmentResponseDTO> getMyAppointments(Authentication authentication) {
@@ -104,6 +85,32 @@ public class DoctorServiceImpl implements DoctorService {
                 .map(this::toAppointmentDTO)
                 .toList();
     }
+
+    @Override
+    public void updateProFile(String gmail, DoctorProfileRequestDTO request, MultipartFile img) {
+        User user = userRepository.findByGmail(gmail).orElseThrow(() -> new RuntimeException("User not found"));
+        Doctor doctor = doctorRepository.findByUserGmail(gmail).orElseThrow(() -> new RuntimeException("Doctor not found"));
+
+        if (request.getFullName() != null) doctor.setName(request.getFullName());
+        if (request.getPhone() != null) doctor.setPhone(request.getPhone());
+        if (request.getSpecialized() != null) doctor.setSpecialized(request.getSpecialized());
+        if (request.getInformation() != null) doctor.setInformation(request.getInformation());
+        if (request.getAddress() != null) doctor.setAddress(request.getAddress());
+        if (request.getLever() != null) doctor.setLever(request.getLever());
+        if (request.getPass() != null && !request.getPass().isBlank()) {
+            user.setPassword(passwordEncoder.encode(request.getPass()));
+            userRepository.save(user);
+        }
+
+        if (img != null && !img.isEmpty()) {
+            if (doctor.getImg() != null && doctor.getImg().matches("\\d+"))
+                mediaStorageService.deleteMedia(Long.valueOf(doctor.getImg()));
+            doctor.setImg(mediaStorageService.uploadMedia(img));
+        }
+
+        doctorRepository.save(doctor);
+    }
+
     private DoctorResponseDTO toDTO(Doctor doctor) {
         return DoctorResponseDTO.builder()
                 .id(doctor.getId())

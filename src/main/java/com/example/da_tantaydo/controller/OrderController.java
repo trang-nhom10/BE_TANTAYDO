@@ -6,10 +6,11 @@ import com.example.da_tantaydo.model.dto.response.OrderResponseDTO;
 import com.example.da_tantaydo.model.enums.OrderStatus;
 import com.example.da_tantaydo.service.OrderService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/orders")
@@ -54,42 +55,31 @@ public class OrderController {
     // GET /api/orders?page=0&size=10
     @GetMapping("/getall")
     @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_ORDER','EMPLOYEE_MANAGE_ORDER')")
-    public ResponseEntity<Page<OrderResponseDTO>> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(orderService.getAll(page, size));
+    public ResponseEntity<List<OrderResponseDTO>> getAll( ){
+        return ResponseEntity.ok(orderService.getAll());
     }
 
     // LẤY ĐƠN HÀNG THEO KHÁCH HÀNG
     // GET /api/orders/customer/1?page=0&size=10
     @GetMapping("/customer/{customerId}")
     @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_ORDER','CUSTOMER_MANAGE_ORDER')")
-    public ResponseEntity<Page<OrderResponseDTO>> getByCustomer(
-            @PathVariable Long customerId,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(orderService.getByCustomer(customerId, page, size));
+    public ResponseEntity<List<OrderResponseDTO>> getByCustomer(@PathVariable Long customerId) {
+        return ResponseEntity.ok(orderService.getByCustomer(customerId));
     }
 
     //  LỌC THEO TRẠNG THÁI
     // GET /api/orders/status?status=PENDING&page=0&size=10
     @GetMapping("/status")
     @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_ORDER','EMPLOYEE_MANAGE_ORDER')")
-    public ResponseEntity<Page<OrderResponseDTO>> getByStatus(
-            @RequestParam OrderStatus status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(orderService.getByStatus(status, page, size));
+    public ResponseEntity<List<OrderResponseDTO>> getByStatus(@RequestParam OrderStatus status){
+        return ResponseEntity.ok(orderService.getByStatus(status));
     }
 
     // TÌM KIẾM
     // GET /api/orders/search?keyword=nguyen&page=0&size=10
     @GetMapping("/search")
     @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_ORDER','EMPLOYEE_MANAGE_ORDER')")
-    public ResponseEntity<Page<OrderResponseDTO>> search(
-            @RequestParam String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(orderService.search(keyword, page, size));
+    public ResponseEntity<List<OrderResponseDTO>> search(@RequestParam String keyword){
+        return ResponseEntity.ok(orderService.search(keyword));
     }
 }

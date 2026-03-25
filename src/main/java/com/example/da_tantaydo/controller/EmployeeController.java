@@ -34,6 +34,15 @@ public class EmployeeController {
          return ResponseEntity.ok("update success");
     }
 
+    @PutMapping("/upload/profile")
+    public ResponseEntity<?> uploadProfile(
+            @RequestPart(value = "request") EmployeeProfileRequest request,
+            @RequestPart(value = "img", required = false) MultipartFile img,
+            Authentication authentication) {
+        String gmail = authentication.getName();
+        employeeService.UpdateProFile(gmail, request, img);
+        return ResponseEntity.ok("Profile updated successfully");
+    }
     // ADMIN - XÓA NHÂN VIÊN
     @PostMapping("/delete/{id}")
 //    @PreAuthorize("hasAuthority('ADMIN_MANAGE_EMPLOYEE')")
@@ -73,27 +82,4 @@ public class EmployeeController {
                         .build()
         );
     }
-
-    //  NHÂN VIÊN - TỰ UPDATE THÔNG TIN CỦA MÌNH
-    @PostMapping("/Update/profile")
-//    @PreAuthorize("hasAnyAuthority('EMPLOYEE_UPDATE_PROFILE')")
-    public ResponseEntity<?> updateProfile(
-            @RequestPart("request") EmployeeRequestDTO request,
-            @RequestPart(value = "img", required = false) MultipartFile img,
-            Authentication authentication) {
-        employeeService.updateProfile(authentication, request, img);
-        return  ResponseEntity.ok("update profile success");
-    }
-
-    //  NHÂN VIÊN - XEM THÔNG TIN CỦA MÌNH
-//    @GetMapping("/view/profile")
-////    @PreAuthorize("hasAnyAuthority('EMPLOYEE_UPDATE_PROFILE')")
-//    public ResponseEntity<ResponseDTO<List<EmployeeResponseDTO>>> getProfile(Authentication authentication,
-//           @RequestPart EmployeeRequestDTO request,
-//           @RequestPart MultipartFile img) {
-//        List<EmployeeResponseDTO> result = employeeService.updateProfile(authentication,request,img);
-//
-//
-//
-//    }
 }

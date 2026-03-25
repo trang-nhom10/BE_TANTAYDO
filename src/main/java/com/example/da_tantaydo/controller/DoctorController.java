@@ -61,14 +61,14 @@ public class DoctorController {
         );
     }
 
-    @PutMapping("/update/profile")
-//    @PreAuthorize("hasAuthority('DOCTOR_UPDATE_PROFILE')")//chưa test
+    @PostMapping("/upload-profile")
     public ResponseEntity<?> updateProfile(
-            @RequestPart("request") DoctorProfileRequestDTO request,
+            @RequestPart(value = "request") DoctorProfileRequestDTO request,
             @RequestPart(value = "img", required = false) MultipartFile img,
             Authentication authentication) {
-                doctorService.updateProfile(authentication.getName(), request, img);
-              return   ResponseEntity.ok("update success");
+        String gmail = authentication.getName();
+        doctorService.updateProFile(gmail, request, img);
+        return ResponseEntity.ok("Profile updated successfully");
     }
 
     // BÁC SĨ XEM LỊCH KHÁCH ĐẶT CỦA MÌNH// chưa test

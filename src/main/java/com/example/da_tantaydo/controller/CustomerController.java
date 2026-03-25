@@ -1,7 +1,6 @@
 package com.example.da_tantaydo.controller;
 
 import com.example.da_tantaydo.model.dto.request.CustomerProfileRequestDTO;
-import com.example.da_tantaydo.model.dto.response.AppointmentResponseDTO;
 import com.example.da_tantaydo.model.dto.response.CustomerResponseDTO;
 import com.example.da_tantaydo.model.dto.response.OrderResponseDTO;
 //import com.example.da_tantaydo.service.CustomerService;
@@ -13,6 +12,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/customers")
@@ -33,12 +34,12 @@ public class CustomerController {
     //  KHÁCH TỰ UPDATE THÔNG TIN + ẢNH
     @PostMapping("update/profile")
     @PreAuthorize("hasAuthority('CUSTOMER_UPDATE_PROFILE')")
-    public ResponseEntity<CustomerResponseDTO> updateProfile(
+    public ResponseEntity<?> updateProfile(
             @RequestPart("request") CustomerProfileRequestDTO request,
             @RequestPart(value = "img", required = false) MultipartFile img,
             Authentication authentication) {
-        return ResponseEntity.ok(
-                customerService.updateProfile(authentication.getName(), request, img));
+                customerService.updateProfile(authentication.getName(), request, img);
+                return  ResponseEntity.ok("update success");
     }
 
     //  KHÁCH XEM LỊCH SỬ ĐẶT LỊCH CỦA MÌNH
@@ -58,32 +59,28 @@ public class CustomerController {
     // GET /api/customers/my/orders?page=0&size=10
     @GetMapping("/my/orders")
     @PreAuthorize("hasAuthority('CUSTOMER_MANAGE_ORDER')")
-    public ResponseEntity<Page<OrderResponseDTO>> getMyOrders(
-            Authentication authentication,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+    public ResponseEntity<List<OrderResponseDTO>> getMyOrders(
+            Authentication authentication) {
         return ResponseEntity.ok(
                 customerService.getMyOrders(
-                        authentication.getName(), page, size));
+                        authentication.getName()));
     }
 
     //  ADMIN - LẤY TẤT CẢ KHÁCH HÀNG
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN_MANAGE_CUSTOMER')")
-    public ResponseEntity<Page<CustomerResponseDTO>> getAll(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(customerService.getAll(page, size));
+    public ResponseEntity<List<CustomerResponseDTO>> getAll() {
+        return ResponseEntity.ok(customerService.getAll());
     }
 
     //  ADMIN - TÌM KIẾM
     @GetMapping("/search")
     @PreAuthorize("hasAuthority('ADMIN_MANAGE_CUSTOMER')")
-    public ResponseEntity<Page<CustomerResponseDTO>> search(
+    public ResponseEntity<List<CustomerResponseDTO>> search(
             @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(customerService.search(keyword, page, size));
+        return ResponseEntity.ok(customerService.search(keyword));
     }
 
     //  ADMIN - LẤY CHI TIẾT

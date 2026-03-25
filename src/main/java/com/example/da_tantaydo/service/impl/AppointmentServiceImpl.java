@@ -1,5 +1,6 @@
 package com.example.da_tantaydo.service.impl;
 
+import com.example.da_tantaydo.helper.CloudinaryPDF;
 import com.example.da_tantaydo.model.dto.request.AppointmentRequestDTO;
 import com.example.da_tantaydo.model.dto.request.AppointmentUpdateStatusDTO;
 import com.example.da_tantaydo.model.dto.response.AppointmentResponseDTO;
@@ -12,7 +13,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -28,6 +31,8 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final DoctorRepository doctorRepository;
     private final DoctorScheduleRepository scheduleRepository;
     private final UserRepository userRepository;
+    private final CloudinaryPDF cloudinaryPDF;
+    private final AppointmentFileRepository appointmentFileRepository;
 
     @Override
     public void create(AppointmentRequestDTO request, Authentication authentication) {
@@ -76,12 +81,29 @@ public class AppointmentServiceImpl implements AppointmentService {
     }
 
     @Override
-    public void updateStatus(Long id, AppointmentUpdateStatusDTO request) {
-        Appointment appointment = appointmentRepository.findById(id).orElseThrow(() -> new RuntimeException("Appointment not found."));
-        if (appointment.getStatus() == AppointmentStatus.CANCELLED)
-            throw new RuntimeException("This appointment has been cancelled and cannot be updated.");
+    public void updateStatus(Long id, AppointmentUpdateStatusDTO request, MultipartFile file) {
+        Appointment appointment = appointmentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Appointment not found."));
+
         appointment.setStatus(request.getStatus());
         appointmentRepository.save(appointment);
+
+        if (file != null && !file.isEmpty()) {
+            try {
+                String fileUrl = cloudinaryPDF.uploadPdf(file.getBytes(), file.getOriginalFilename());
+
+                AppointmentFile appointmentFile = AppointmentFile.builder()
+                        .appointment(appointment)
+                        .fileUrl(fileUrl)
+                        .fileName(file.getOriginalFilename())
+                        .build();
+
+                appointmentFileRepository.save(appointmentFile);
+
+            } catch (IOException e) {
+                throw new RuntimeException("Upload PDF failed: " + e.getMessage(), e);
+            }
+        }
     }
 
     @Override

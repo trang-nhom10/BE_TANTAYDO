@@ -7,13 +7,15 @@ import com.example.da_tantaydo.model.dto.response.OrderResponseDTO;
 import com.example.da_tantaydo.model.enums.OrderStatus;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface OrderService {
     OrderResponseDTO create(OrderRequestDTO request);
     OrderResponseDTO updateStatus(Long id, OrderUpdateStatusDTO request);
     void delete(Long id);
     OrderResponseDTO getById(Long id);
-    Page<OrderResponseDTO> getAll(int page, int size);
-    Page<OrderResponseDTO> getByCustomer(Long customerId, int page, int size);
-    Page<OrderResponseDTO> getByStatus(OrderStatus status, int page, int size);
-    Page<OrderResponseDTO> search(String keyword, int page, int size);
+    List<OrderResponseDTO> getAll();
+    List<OrderResponseDTO> getByCustomer(Long customerId);
+    List<OrderResponseDTO> getByStatus(OrderStatus status);
+    List<OrderResponseDTO> search(String keyword);
 }
