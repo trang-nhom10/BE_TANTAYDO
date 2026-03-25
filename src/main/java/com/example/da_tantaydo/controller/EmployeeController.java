@@ -33,7 +33,7 @@ public class EmployeeController {
          return ResponseEntity.ok("update success");
     }
 
-    @PutMapping("/upload/profile")
+    @PostMapping("/upload/profile")
     @PreAuthorize("hasAuthority('EMPLOYEE_UPDATE_PROFILE')")
     public ResponseEntity<?> uploadProfile(
             @RequestPart(value = "request") EmployeeProfileRequest request,

@@ -33,7 +33,7 @@ public class OrderController {
         return ResponseEntity.ok(orderService.updateStatus(id, request));
     }
 
-    @DeleteMapping("delete/{id}")
+    @PostMapping("delete/{id}")
     @PreAuthorize("hasAnyAuthority('CUSTOMER_MANAGE_ORDER','ADMIN_MANAGE_ORDER')")
     public ResponseEntity<String> cancel(@PathVariable Long id) {
         orderService.delete(id);

@@ -53,7 +53,7 @@ public class DoctorScheduleController {
     }
 
     @GetMapping("/getall")
-    @PreAuthorize("hasAuthority('ADMIN_MANAGE_SCHEDULE','EMPLOYEE_MANAGE_SCHEDULE')")
+    @PreAuthorize("hasAuthority('ADMIN_MANAGE_SCHEDULE','EMPLOYEE_MANAGE_SCHEDULE','CUSTOMER_MANAGE_SCHEDULE')")
     public ResponseEntity<List<DoctorScheduleResponseDTO>> getAll() {
         return ResponseEntity.ok(scheduleService.getAll());
     }
