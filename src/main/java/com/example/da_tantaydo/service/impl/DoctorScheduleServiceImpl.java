@@ -119,14 +119,21 @@ public class DoctorScheduleServiceImpl implements DoctorScheduleService {
         return availableSlots;
     }
 
-    public DoctorTodayScheduleDTO getTodaySchedule(Authentication authentication) {
+    @Override
+    public DoctorTodayScheduleDTO getTodaySchedule(Authentication authentication, LocalDate date) {
         String gmail = authentication.getName();
-        User user = userRepository.findByGmail(gmail).orElseThrow(() -> new RuntimeException("User not found."));
-        Doctor doctor = doctorRepository.findByUserId(user.getId()).orElseThrow(() -> new RuntimeException("Doctor not found."));
-        LocalDate today = LocalDate.now();
-        DoctorSchedule schedule = scheduleRepository.findByDoctorIdAndWorkDate(doctor.getId(), today).orElseThrow(() -> new RuntimeException("Không có lịch làm việc hôm nay."));
+
+        User user = userRepository.findByGmail(gmail)
+                .orElseThrow(() -> new RuntimeException("User not found."));
+
+        Doctor doctor = doctorRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new RuntimeException("Doctor not found."));
+
+        DoctorSchedule schedule = scheduleRepository.findByDoctorIdAndWorkDate(doctor.getId(), date)
+                .orElseThrow(() -> new RuntimeException("Không có lịch làm việc ngày " + date));
+
         List<AppointmentTodayDTO> appointments = appointmentRepository
-                .findByDoctorIdAndCreateAtOrderByTimeopenAsc(doctor.getId(), today)
+                .findByDoctorIdAndCreateAtOrderByTimeopenAsc(doctor.getId(), date)
                 .stream()
                 .map(a -> AppointmentTodayDTO.builder()
                         .id(a.getId())
@@ -135,8 +142,8 @@ public class DoctorScheduleServiceImpl implements DoctorScheduleService {
                         .createdAt(a.getCreateAt())
                         .timeOpen(a.getTimeopen())
                         .status(a.getStatus().name())
-                        .build()
-                ).collect(Collectors.toList());
+                        .build())
+                .collect(Collectors.toList());
 
         return DoctorTodayScheduleDTO.builder()
                 .scheduleId(schedule.getId())
@@ -148,6 +155,8 @@ public class DoctorScheduleServiceImpl implements DoctorScheduleService {
                 .appointments(appointments)
                 .build();
     }
+
+
 
     private DoctorScheduleResponseDTO toDTO(DoctorSchedule s) {
         return DoctorScheduleResponseDTO.builder()

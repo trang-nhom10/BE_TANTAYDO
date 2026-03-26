@@ -78,9 +78,16 @@ public class DoctorScheduleController {
     }
     @GetMapping("/today")
     @PreAuthorize("hasAnyAuthority('DOCTOR_MANAGER_SCHEDULE')")
-    public ResponseEntity<?> getTodaySchedule(Authentication authentication) {
+    public ResponseEntity<?> getTodaySchedule(
+            Authentication authentication,
+            @RequestParam(value = "date", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date
+    ) {
         try {
-            return ResponseEntity.ok(scheduleService.getTodaySchedule(authentication));
+            if (date == null) {
+                date = LocalDate.now();
+            }
+            return ResponseEntity.ok(scheduleService.getTodaySchedule(authentication, date));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {

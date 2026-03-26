@@ -18,5 +18,5 @@ public interface DoctorScheduleService {
     List<DoctorScheduleResponseDTO> getByDoctor(Long doctorId);
     List<DoctorScheduleResponseDTO> getByDate(LocalDate date);
     List<AvailableSlotDTO> getAvailableSlots(Long doctorId, LocalDate workDate);
-    DoctorTodayScheduleDTO getTodaySchedule(Authentication authentication);
+    DoctorTodayScheduleDTO getTodaySchedule(Authentication authentication,LocalDate date);
 }
