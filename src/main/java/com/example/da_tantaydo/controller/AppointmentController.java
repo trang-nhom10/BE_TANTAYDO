@@ -88,7 +88,7 @@ public class AppointmentController {
     }
 
     @GetMapping("/my")
-    @PreAuthorize("hasAuthority('DOCTOR_MANAGER_APPOINTMENT')")
+    @PreAuthorize("hasAuthority('CUSTOMER_MANAGE_APPOINTMENT')")
     public ResponseEntity<List<AppointmentResponseDTO>> getMyAppointments(
             Authentication authentication) {
         return ResponseEntity.ok(customerService.getMyAppointments(authentication));
