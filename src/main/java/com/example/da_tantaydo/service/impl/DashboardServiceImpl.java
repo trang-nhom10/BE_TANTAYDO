@@ -75,11 +75,12 @@ public class DashboardServiceImpl implements DashboardService {
     public List<MonthlyStatResponseDTO> getMonthlyStats() {
         return appointmentRepository.getMonthlyStats().stream()
                 .map(r -> MonthlyStatResponseDTO.builder()
-                        .month(((Number) r[0]).intValue())
-                        .total(((Number) r[1]).longValue())
-                        .confirmed(((Number) r[2]).longValue())
-                        .pending(((Number) r[3]).longValue())
-                        .cancelled(((Number) r[4]).longValue())
+                        .year(((Number) r[0]).intValue())
+                        .month(((Number) r[1]).intValue())
+                        .total(((Number) r[2]).longValue())
+                        .confirmed(((Number) r[3]).longValue())
+                        .pending(((Number) r[4]).longValue())
+                        .cancelled(((Number) r[5]).longValue())
                         .build())
                 .collect(Collectors.toList());
     }

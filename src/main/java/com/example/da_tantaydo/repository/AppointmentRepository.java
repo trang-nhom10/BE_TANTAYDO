@@ -81,16 +81,17 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     List<Object[]> getStatusRate();
 
     @Query(value = """
-    SELECT
+
+            SELECT
+        YEAR(CEATED_AT) AS year,
         MONTH(CEATED_AT) AS month,
         COUNT(*) AS total,
         SUM(CASE WHEN STATUS = 'CONFIRMED' THEN 1 ELSE 0 END) AS confirmed,
         SUM(CASE WHEN STATUS = 'PENDING' THEN 1 ELSE 0 END) AS pending,
         SUM(CASE WHEN STATUS = 'CANCELLED' THEN 1 ELSE 0 END) AS cancelled
     FROM APPOINTMENTS
-    WHERE YEAR(CEATED_AT) = YEAR(CURDATE())
-    GROUP BY MONTH(CEATED_AT)
-    ORDER BY MONTH(CEATED_AT)
+    GROUP BY YEAR(CEATED_AT), MONTH(CEATED_AT)
+    ORDER BY YEAR(CEATED_AT), MONTH(CEATED_AT)
     """, nativeQuery = true)
     List<Object[]> getMonthlyStats();
 

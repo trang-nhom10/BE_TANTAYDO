@@ -8,6 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class MonthlyStatResponseDTO {
+    private Integer year;
     private Integer month;
     private Long total;
     private Long confirmed;
