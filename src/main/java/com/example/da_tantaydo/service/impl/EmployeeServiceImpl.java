@@ -44,7 +44,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             Employee employee = new Employee();
             employee.setFullName(request.getName());
             employee.setGender(Gender.valueOf(request.getGender()));
-            employee.setCreatedAt(LocalDate.parse(String.valueOf(request.getCreatedAt())));
+            employee.setCreatedAt(request.getCreatedAt());
             employee.setUser(saved);
             employeeRepository.save(employee);
 
