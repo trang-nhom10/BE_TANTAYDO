@@ -61,7 +61,7 @@ public class AppointmentController {
         return ResponseEntity.ok("cancel success");
     }
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN_MANAGE_APPOINTMENT')")
+    @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_APPOINTMENT','EMPLOYEE_MANAGE_ORDER')")
     public ResponseEntity<List<AppointmentResponseDTO>> getAll() {
         return ResponseEntity.ok(appointmentService.getAll());
     }
