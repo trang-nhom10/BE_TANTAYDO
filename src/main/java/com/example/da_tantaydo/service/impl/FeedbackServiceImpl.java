@@ -32,7 +32,7 @@ public class FeedbackServiceImpl implements FeedbackService {
                 .sick(request.getSick())
                 .evaluate(request.getEvaluate())
                 .text(request.getText())
-                .createdAt(LocalDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh")))
+                .createdAt(LocalDateTime.now())
                 .build();
         feedbackRepository.save(feedback);
     }
