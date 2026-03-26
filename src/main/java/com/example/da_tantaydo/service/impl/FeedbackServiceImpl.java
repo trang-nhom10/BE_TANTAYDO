@@ -39,16 +39,17 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     @Override
     public List<FeedbackResponseDTO> getTop5() {
-        return feedbackRepository.findTop5ByOrderByCreatedAtDesc()
+        return feedbackRepository.findTop5WithImage()
                 .stream()
-                .map(f -> FeedbackResponseDTO.builder()
-                        .id(f.getId())
-                        .fullName(f.getFullName())
-                        .gmail(f.getGmail())
-                        .sick(f.getSick())
-                        .text(f.getText())
-                        .createdAt(f.getCreatedAt())
-                        .evaluate(f.getEvaluate())
+                .map(row -> FeedbackResponseDTO.builder()
+                        .id(((Number) row[0]).longValue())
+                        .fullName((String) row[1])
+                        .gmail((String) row[2])
+                        .sick((String) row[3])
+                        .text((String) row[4])
+                        .createdAt(row[5] != null ? ((LocalDateTime) row[5]) : null)
+                        .evaluate(row[6] != null ? ((Number) row[6]).intValue() : null)
+                        .imageUrl((String) row[7])
                         .build())
                 .collect(Collectors.toList());
     }

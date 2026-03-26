@@ -87,7 +87,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGlobalException(Exception e, WebRequest request) {
         log.error(e.toString());
-        ErrorDetail errorDetail = new ErrorDetail(new Date(), messageTemplate.message("error.system"), "", request.getDescription(false));
+        ErrorDetail errorDetail = new ErrorDetail(
+                new Date(),
+                "An error occurred. Please try again.",
+                "",
+                request.getDescription(false)
+        );
         return new ResponseEntity<>(errorDetail, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

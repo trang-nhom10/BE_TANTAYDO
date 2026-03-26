@@ -15,4 +15,5 @@ public class FeedbackResponseDTO {
     private String text;
     private LocalDateTime createdAt;
     private Integer evaluate;
+    private String imageUrl;
 }
