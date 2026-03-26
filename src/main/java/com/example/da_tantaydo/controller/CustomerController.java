@@ -48,7 +48,7 @@ public class CustomerController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('ADMIN_MANAGE_CUSTOMER')")
+    @PreAuthorize("hasAnyAuthority('ADMIN_MANAGE_CUSTOMER','EMPLOYEE_MANAGE_ORDER')")
     public ResponseEntity<List<CustomerResponseDTO>> getAll() {
         return ResponseEntity.ok(customerService.getAll());
     }
