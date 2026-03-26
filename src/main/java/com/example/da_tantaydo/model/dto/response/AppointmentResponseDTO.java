@@ -23,4 +23,5 @@ public class AppointmentResponseDTO {
     private LocalTime timeOpen;
     private String note;
     private String status;
+    private String fileUrl;
 }

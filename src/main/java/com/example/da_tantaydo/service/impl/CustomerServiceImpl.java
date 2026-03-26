@@ -7,6 +7,7 @@ import com.example.da_tantaydo.model.dto.response.CustomerResponseDTO;
 import com.example.da_tantaydo.model.dto.response.OrderResponseDTO;
 import com.example.da_tantaydo.model.entity.Customer;
 import com.example.da_tantaydo.model.entity.User;
+import com.example.da_tantaydo.model.enums.AppointmentStatus;
 import com.example.da_tantaydo.repository.*;
 import com.example.da_tantaydo.service.CustomerService;
 import lombok.RequiredArgsConstructor;
@@ -62,7 +63,7 @@ public class CustomerServiceImpl implements CustomerService {
     public List<AppointmentResponseDTO> getMyAppointments(Authentication authentication) {
         String gmail = authentication.getName();
         return appointmentRepository
-                .findByCustomerUserGmailOrderByCreateAtDesc(gmail)
+                .findByGmailWithFiles(gmail)
                 .stream()
                 .map(a -> AppointmentResponseDTO.builder()
                         .id(a.getId())
@@ -76,6 +77,13 @@ public class CustomerServiceImpl implements CustomerService {
                         .timeOpen(a.getTimeopen())
                         .note(a.getNote())
                         .status(a.getStatus() != null ? a.getStatus().name() : null)
+                        .fileUrl(
+                                a.getStatus() == AppointmentStatus.SUCCESS
+                                        && a.getAppointmentFiles() != null
+                                        && !a.getAppointmentFiles().isEmpty()
+                                        ? a.getAppointmentFiles().get(0).getFileUrl()
+                                        : null
+                        )
                         .build())
                 .toList();
     }

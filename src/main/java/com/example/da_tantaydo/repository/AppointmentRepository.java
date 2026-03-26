@@ -93,4 +93,12 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     ORDER BY MONTH(CEATED_AT)
     """, nativeQuery = true)
     List<Object[]> getMonthlyStats();
+
+    @Query("""
+    SELECT DISTINCT a FROM Appointment a
+    LEFT JOIN FETCH a.appointmentFiles af
+    WHERE a.customer.user.gmail = :gmail
+    ORDER BY a.createAt DESC
+    """)
+    List<Appointment> findByGmailWithFiles(@Param("gmail") String gmail);
 }

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Table(name = "APPOINTMENTS")
@@ -55,5 +56,8 @@ public class Appointment {
     @Column(name = "STATUS")
     @Enumerated(EnumType.STRING)
     private AppointmentStatus status;
+
+    @OneToMany(mappedBy = "appointment", fetch = FetchType.LAZY) // thêm dòng này
+    private List<AppointmentFile> appointmentFiles;
 
 }
