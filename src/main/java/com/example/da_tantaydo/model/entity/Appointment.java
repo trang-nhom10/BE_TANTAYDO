@@ -57,7 +57,7 @@ public class Appointment {
     @Enumerated(EnumType.STRING)
     private AppointmentStatus status;
 
-    @OneToMany(mappedBy = "appointment", fetch = FetchType.LAZY) // thêm dòng này
+    @OneToMany(mappedBy = "appointment", fetch = FetchType.LAZY)
     private List<AppointmentFile> appointmentFiles;
 
 }

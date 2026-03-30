@@ -9,4 +9,5 @@ public interface UserService {
     LoginReponseDTO login (LoginRequestDto request);
     User register (RegisterRequestDTO request);
     Object getProfile(String email);
+    void forgotPassword(String gmail, String otp, String newPassword);
 }

@@ -13,6 +13,7 @@ import com.example.da_tantaydo.repository.RoleRepository;
 import com.example.da_tantaydo.repository.UserRepository;
 import com.example.da_tantaydo.repository.customer.UserCustomRepository;
 import com.example.da_tantaydo.security.JwtUtil;
+import com.example.da_tantaydo.service.OtpService;
 import com.example.da_tantaydo.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -29,7 +30,7 @@ public class UserServiceimpl implements UserService {
     private final JwtUtil jwtUtil;
     private final RoleRepository roleRepository;
     private final CustomerRepository customerRepository;
-    private final DoctorRepository doctorRepository;
+    private final OtpService otpService;
     private final UserCustomRepository userCustomRepository;
 
     @Override
@@ -47,6 +48,9 @@ public class UserServiceimpl implements UserService {
     @Transactional
     @Override
     public User register(RegisterRequestDTO request) {
+        if (!otpService.verifyOtp(request.getGmail(), request.getOtp())) {
+            throw new RuntimeException("OTP không hợp lệ hoặc đã hết hạn");
+        }
         if (userRepository.findByGmail(request.getGmail()).isPresent()) {
             throw new BadCredentialsException("Gmail already exists");
         }
@@ -57,14 +61,24 @@ public class UserServiceimpl implements UserService {
         user.setStatus(Status.ACTIVE);
         user.setRole(role);
         User savedUser = userRepository.save(user);
-            Customer customer = new Customer();
-            customer.setUser(savedUser);
-            customerRepository.save(customer);
+        Customer customer = new Customer();
+        customer.setUser(savedUser);
+        customerRepository.save(customer);
         return savedUser;
     }
 
     @Override
     public Object getProfile(String email) {
         return userCustomRepository.getProfileByEmail(email);
+    }
+
+    @Override
+    public void forgotPassword(String gmail, String otp, String newPassword) {
+        if (!otpService.verifyOtp(gmail, otp)) {
+            throw new RuntimeException("OTP không hợp lệ hoặc đã hết hạn");
+        }
+        User user = userRepository.findByGmail(gmail).orElseThrow(() -> new RuntimeException("Không tìm thấy tài khoản"));
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
     }
 }

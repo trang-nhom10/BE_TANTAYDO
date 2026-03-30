@@ -43,6 +43,7 @@ public class DoctorController {
                 "data", doctorService.getAll()
                 ));
     }
+
     @GetMapping("/search")
     @PreAuthorize("hasAuthority('ADMIN_MANAGE_DOCTOR')")
     public ResponseEntity<ResponseDTO<List<DoctorResponseDTO>>> search(

@@ -9,8 +9,11 @@ import com.example.da_tantaydo.model.enums.AppointmentStatus;
 import com.example.da_tantaydo.model.enums.ScheduleStatus;
 import com.example.da_tantaydo.repository.*;
 import com.example.da_tantaydo.service.AppointmentService;
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import jakarta.mail.internet.MimeMessage;
 
 @Transactional
 @Service
@@ -32,6 +36,7 @@ public class AppointmentServiceImpl implements AppointmentService {
     private final UserRepository userRepository;
     private final CloudinaryPDF cloudinaryPDF;
     private final AppointmentFileRepository appointmentFileRepository;
+    private final JavaMailSender mailSender;
 
     @Override
     public void create(AppointmentRequestDTO request, Authentication authentication) {
@@ -86,19 +91,19 @@ public class AppointmentServiceImpl implements AppointmentService {
 
         appointment.setStatus(request.getStatus());
         appointmentRepository.save(appointment);
+        if (request.getStatus() == AppointmentStatus.CONFIRMED) {
+            sendConfirmationEmail(appointment);
+        }
 
         if (file != null && !file.isEmpty()) {
             try {
                 String fileUrl = cloudinaryPDF.uploadPdf(file.getBytes(), file.getOriginalFilename());
-
                 AppointmentFile appointmentFile = AppointmentFile.builder()
                         .appointment(appointment)
                         .fileUrl(fileUrl)
                         .fileName(file.getOriginalFilename())
                         .build();
-
                 appointmentFileRepository.save(appointmentFile);
-
             } catch (IOException e) {
                 throw new RuntimeException("Upload PDF failed: " + e.getMessage(), e);
             }
@@ -184,11 +189,52 @@ public class AppointmentServiceImpl implements AppointmentService {
                 .gmail(a.getGmail())
                 .address(a.getAddress())
                 .createdAt(a.getCreateAt() != null ? a.getCreateAt().toString() : null)
-                .doctorName(a.getDoctor() != null ? a.getDoctor().getName() : null) // ✅
+                .doctorName(a.getDoctor() != null ? a.getDoctor().getName() : null)
                 .timeOpen(a.getTimeopen())
                 .note(a.getNote())
                 .status(a.getStatus() != null ? a.getStatus().name() : null)
                 .build();
     }
 
+    private void sendConfirmationEmail(Appointment appointment) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setTo(appointment.getGmail());
+            helper.setSubject("Xác nhận lịch khám bệnh");
+            helper.setText("""
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px;">
+                        <h2 style="color: #4A90E2;">Thông báo xác nhận lịch khám ✅</h2>
+                        <p>Xin chào <strong>%s</strong>,</p>
+                        <p>Lịch khám của bạn đã được xác nhận. Thông tin chi tiết:</p>
+                        <table style="width: 100%%; border-collapse: collapse; margin-top: 10px;">
+                            <tr style="background-color: #f5f5f5;">
+                                <td style="padding: 10px; border: 1px solid #ddd;"><strong>Bác sĩ khám</strong></td>
+                                <td style="padding: 10px; border: 1px solid #ddd;">%s</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; border: 1px solid #ddd;"><strong>Ngày khám</strong></td>
+                                <td style="padding: 10px; border: 1px solid #ddd;">%s</td>
+                            </tr>
+                            <tr style="background-color: #f5f5f5;">
+                                <td style="padding: 10px; border: 1px solid #ddd;"><strong>Giờ khám</strong></td>
+                                <td style="padding: 10px; border: 1px solid #ddd;">%s</td>
+                            </tr>
+                        </table>
+                        <p style="margin-top: 20px; color: #e74c3c;"><strong>Vui lòng có mặt đúng giờ!</strong></p>
+                        <p style="color: #999; font-size: 12px;">Nếu cần hỗ trợ, vui lòng liên hệ phòng khám. Xin cảm ơn!</p>
+                    </div>
+                    """.formatted(
+                    appointment.getNameCustomer(),
+                    appointment.getDoctor().getName(),
+                    appointment.getCreateAt(),
+                    appointment.getTimeopen()
+            ), true);
+
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            throw new RuntimeException("Không thể gửi email thông báo: " + e.getMessage());
+        }
+    }
 }
